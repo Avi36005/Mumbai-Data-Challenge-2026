@@ -4,8 +4,8 @@
    the six weather fields at the four official stations (bilinear), exactly as tools/gfs_weather.py does for the competition.
 2. Weather engine (cloud/wx_lgbm.txt, trained by airpulse_city/wx_engine.py): PM2.5 for every hour; the newest run wins per hour.
 3. Spread to 22 more stations (cloud/transfer.json: ridge transfer + distance weighting, validated) and to the 24 BMC wards.
-4. Write data/city.json: the fixed part (measured week + submitted 11-12 Nov forecast, cloud/base_city.json) plus every complete
-   new forecast day, and data/status.json for the "How it works" panel.
+4. Write site/data/city.json: the fixed part (measured week + submitted 11-12 Nov forecast, cloud/base_city.json) plus every complete
+   new forecast day, and site/data/status.json for the "How it works" panel.
 Usage: python cloud/cloud_update.py [--offline TABLE.csv.gz]   (offline: read a local GFS station table instead of downloading)
 """
 import http.client,json,sys,time
@@ -131,9 +131,9 @@ def main():
         for d in days:
             g = sel[sel.day==d];wins.append({'days':[str(d)],'note':'daily weather engine','gfs_run':str(pd.to_datetime(g.cycle,utc=True).max())[:16]+'Z','built':str(g.built.max())})
     city['windows'] = wins;city['generated'] = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=5,minutes=30))).strftime('%Y-%m-%d %H:%M IST')
-    (R/'data/city.json').write_text(json.dumps(city,separators=(',',':')))
+    (R/'site/data/city.json').write_text(json.dumps(city,separators=(',',':')))
     status = {'updated':city['generated'],'runner':'GitHub Actions (cloud)' if '--offline' not in sys.argv else 'local check','gfs_run':str(newest)[:16].replace(' ','T')+'Z',
               'forecast_to':city['hours'][-1],'days':len(city['hours'])//24,'engine_days':[str(d) for d in days],'seconds':round(time.time()-t0)}
-    (R/'data/status.json').write_text(json.dumps(status,indent=1));print(json.dumps(status))
+    (R/'site/data/status.json').write_text(json.dumps(status,indent=1));print(json.dumps(status))
 
 if __name__=='__main__':main()

@@ -1,9 +1,9 @@
 """Daily air brief written by Google Gemini, in English, Hindi and Marathi.
 
-Reads data/city.json (the forecast this run just built), picks today and tomorrow (IST), computes a few facts
+Reads site/data/city.json (the forecast this run just built), picks today and tomorrow (IST), computes a few facts
 (population-weighted city average, cleanest daytime hour, worst hour, most affected wards) and asks Gemini to turn
 ONLY those facts into a short brief. The reply is rejected if it contains any number that is not in the facts,
-so the model cannot invent values. Writes data/brief.json.
+so the model cannot invent values. Writes site/data/brief.json.
 
 Runs in the cloud job after the forecast. Needs the GitHub secret GEMINI_API_KEY; without it the step is skipped
 and the app simply does not show the brief. Standard library only.
@@ -13,7 +13,9 @@ from datetime import datetime, timedelta, timezone
 
 MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
 KEY = os.environ.get('GEMINI_API_KEY', '').strip()
-CITY, OUT = 'data/city.json', 'data/brief.json'
+from pathlib import Path
+D_ = Path(__file__).resolve().parents[1] / 'site' / 'data'
+CITY, OUT = D_ / 'city.json', D_ / 'brief.json'
 CUT = [30, 60, 90, 120, 250, 1e9]
 CAT = ['Good', 'Satisfactory', 'Moderate', 'Poor', 'Very poor', 'Severe']
 cat = lambda v: CAT[next(i for i, c in enumerate(CUT) if v <= c)]

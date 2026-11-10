@@ -1,13 +1,9 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "site",
     "ignore": [
-      "firebase.json",
       "**/.*",
-      "scripts/**",
-      "README.md",
-      "tests/**",
-      "cloud/**"
+      "_test/**"
     ],
     "headers": [
       {

@@ -18,6 +18,32 @@ Works on any phone browser; no install, no sign-in.
 
 Air-quality apps usually show one number for one station. AirPulse turns a forecast for four official stations into something every family in Mumbai can use: a forecast for all 24 BMC wards, a plan for your day, and a picture to send to the family WhatsApp group, in English, Hindi or Marathi.
 
+| Overview | Plan my day | On a phone (Hindi) |
+|---|---|---|
+| <img src="docs/img/overview.jpg" width="420"> | <img src="docs/img/plan.jpg" width="420"> | <img src="docs/img/phone_hi.jpg" width="190"> |
+
+## Repository layout
+
+```
+site/                      the published app (Firebase Hosting serves this folder)
+  index.html app.js app.css i18n.js     the city app (no build step)
+  sw.js manifest.webmanifest icon*      installable app, works offline
+  data/                    city.json (forecast for 24 wards), status.json (last cloud run), brief.json (Gemini brief), wards.geo.json
+  evidence/                the evidence dashboard (accuracy, Diwali lens, weather, data health)
+cloud/                     the twice-daily cloud job
+  cloud_update.py          NOAA GFS -> weather engine -> 26 stations -> 24 wards -> site/data/
+  gemini_brief.py          daily brief by Google Gemini, every number checked
+  wx_lgbm.txt transfer.json base_city.json store.csv requirements.txt   model, city transfer, fixed part, forecast history
+scripts/                   one-off build and training scripts (run on the competition data, kept for reproducibility)
+  wx_engine.py build_city.py build_data.py
+  legacy/daily_update.sh   the earlier laptop updater, replaced by the cloud job
+tests/                     run.html (71 browser checks), phone.html (phone-sized preview)
+docs/                      architecture.svg and screenshots used in this README
+.github/workflows/         daily-forecast.yml: the cloud job (11:15 and 23:30 IST)
+firebase.json .firebaserc  hosting settings (no-cache, public folder site/)
+.env.example               placeholder for local runs; real keys are GitHub Actions secrets, never files
+```
+
 ## What it does
 
 A white, single-page dashboard (DM Sans; Noto Sans Devanagari for Hindi and Marathi). Pick an area, a day and an hour at the top; every panel updates. The control bar stays at the top of the screen as you scroll, in a compact form so it never hides a section heading. The area you pick is also your home area in *My exposure*, and changing either one changes both.
@@ -47,7 +73,7 @@ Links can preselect language, ward and hour: `?lang=mr&ward=ME&hour=1`.
 | **Firebase Hosting** | Serves the live app at `airpulse-mumbai-2026.web.app` over HTTPS on Google's global CDN; pages, scripts and data are served with `no-cache`, so each forecast refresh shows up at once | `firebase.json`, `.firebaserc`; deployed with `firebase deploy --only hosting` |
 | **Google Cloud** | The Firebase project `airpulse-mumbai-2026` is a Google Cloud project. A hosting-only service account (IAM) lets the cloud job publish each new forecast | Firebase console → project `airpulse-mumbai-2026`; `.github/workflows/daily-forecast.yml` |
 | **Google Fonts** | *DM Sans* for Latin text and *Noto Sans Devanagari* (Google's Noto family) so Hindi and Marathi render cleanly on every phone | `<link>` in `index.html` |
-| **Gemini** (Gemini API, `gemini-2.5-flash`) | Writes the **daily air brief** at the top of the app in English, Hindi and Marathi, from the forecast numbers only. The cloud job rejects any reply that contains a number not in those facts, or emoji, or wrong digits, and keeps the previous brief instead; the brief shows only while it is for today or tomorrow, labelled "Google Gemini" | `cloud/gemini_brief.py` → `data/brief.json`; key kept as the encrypted secret `GEMINI_API_KEY` |
+| **Gemini** (Gemini API, `gemini-2.5-flash`) | Writes the **daily air brief** at the top of the app in English, Hindi and Marathi, from the forecast numbers only. The cloud job rejects any reply that contains a number not in those facts, or emoji, or wrong digits, and keeps the previous brief instead; the brief shows only while it is for today or tomorrow, labelled "Google Gemini" | `cloud/gemini_brief.py` → `site/data/brief.json`; key kept as the encrypted secret `GEMINI_API_KEY` |
 | **Google Calendar** | **Add to Google Calendar** in *Plan my day* opens a ready event for the cleanest hour of the chosen activity, in the user's language, Mumbai time zone; no sign-in to AirPulse, no key | `calUrl()` in `app.js` |
 | **Google Maps** | **Open in Google Maps** on the city map opens the selected ward | `paintMap()` in `app.js` |
 | **Google text-to-speech voices** (Chrome and Android, through the Web Speech API) | The **Listen** button reads the forecast, the advice and the personal plan aloud in English, Hindi or Marathi; on Android and Chrome these are Google's voices. Marathi falls back to Hindi when no Marathi voice is installed | `speak()` in `app.js` |
@@ -59,7 +85,7 @@ The forecast itself comes from our competition model (LightGBM with NOAA GFS wea
 ```bash
 npm install -g firebase-tools        # or: npx firebase-tools ...
 firebase login
-firebase deploy --only hosting --project airpulse-mumbai-2026
+firebase deploy --only hosting --project airpulse-mumbai-2026   # publishes the site/ folder (firebase.json)
 ```
 
 ## The timeline: last week, today, and the days ahead
@@ -75,6 +101,8 @@ The day tabs say *Today* and *Tomorrow*, and each day says whether it is measure
 
 ## Cloud backend: no laptop, no person
 
+![AirPulse system architecture](docs/architecture.svg)
+
 The application updates itself in the cloud, from `.github/workflows/daily-forecast.yml` (GitHub Actions). It runs twice a day at 11:15 and 23:30 IST, after each new NOAA GFS run is published, and can also be started by hand.
 
 | Step | What runs | Where |
@@ -85,11 +113,11 @@ The application updates itself in the cloud, from `.github/workflows/daily-forec
 | 3. City | 4 → 26 stations (ridge transfer + distance weighting, `cloud/transfer.json`), then 24 wards; adds every complete new day after the fixed part (`cloud/base_city.json`: measured week + submitted 11–12 Nov forecast) | `cloud/cloud_update.py` |
 | 4. Quality gate | The 71 browser checks in headless Chrome: all three languages, a computer screen and a 390 px phone screen, and the evidence page; **nothing is published if one fails** | workflow, `tests/run.html` |
 | 5. Publish | Firebase Hosting (Google Cloud) through a hosting-only service account kept as the encrypted secret `FIREBASE_SERVICE_ACCOUNT` | `FirebaseExtended/action-hosting-deploy` |
-| 6. Record | Commits `data/city.json`, `data/status.json` and `cloud/store.csv` back to this repository | workflow |
+| 6. Record | Commits `site/data/city.json`, `site/data/status.json` and `cloud/store.csv` back to this repository | workflow |
 
 **Checked against the local pipeline:** the cloud's own GFS download matches the competition's weather tables exactly (624 values, difference 0.0). The cloud engine also matches the local engine exactly (348 hours, difference 0.0).
 
-The **How AirPulse works** panel in the app shows this pipeline, with a live status line read from `data/status.json`: last update, the GFS run used, the date the forecast runs to, what ran it, and the checks passed.
+The **How AirPulse works** panel in the app shows this pipeline, with a live status line read from `site/data/status.json`: last update, the GFS run used, the date the forecast runs to, what ran it, and the checks passed.
 
 ## Two forecast engines
 
@@ -98,9 +126,13 @@ The **How AirPulse works** panel in the app shows this pipeline, with a live sta
 | **11–12 Nov 2026** | Our **competition model** (LightGBM blend, the exact files submitted to Zindi) | Zindi Train to 10 Nov 09:00 + NOAA GFS as issued | 28 backtest windows; past Diwalis |
 | **Every later day** | The **daily weather engine** (`scripts/wx_engine.py`): LightGBM that predicts PM2.5 from the GFS forecast, hour, day of year and station; it needs no fresh PM readings, so it keeps working after the last Zindi release | NOAA GFS runs (00Z, 12Z), trained on 278,000 station-hours of Zindi Train | Out-of-time, 1 Sep – 5 Nov 2026, 1–3 days ahead: hourly RMSE **14.4** vs 18.8 for the usual level of that month and hour (−23%); daily correlation **0.75** |
 
-The cloud job above makes the daily update. `scripts/daily_update.sh` is the earlier laptop version of the same steps; it is kept for reference and is not needed. Each day's tab says which engine made it.
+The cloud job above makes the daily update. `scripts/legacy/daily_update.sh` is the earlier laptop version of the same steps; it is kept for reference and is not needed. Each day's tab says which engine made it.
 
 ## How it works
+
+| Map and BMC priority list | My exposure | How AirPulse works (live pipeline) |
+|---|---|---|
+| <img src="docs/img/map_bmc.jpg" width="330"> | <img src="docs/img/exposure.jpg" width="330"> | <img src="docs/img/pipeline.jpg" width="330"> |
 
 1. **Four-station forecast.** Our competition model (LightGBM, trained with NOAA GFS weather as it was issued) forecasts the four official stations for 11–12 Nov 2026, exactly as submitted to the competition.
 2. **From 4 stations to 26.** A second model learned from 2024 data how 22 other Mumbai stations move with those four (ridge regression on the four stations plus time of day), blended 50/50 with a distance-weighted average. Tested two ways:
@@ -134,7 +166,7 @@ python3 -m http.server 8766          # from the repo root
 
 ### End-to-end test, 10 Nov 2026
 
-Every control was also clicked by hand in a real Chrome browser on the live site, and the backend files (`data/city.json`, `data/status.json`, `evidence/`, `sw.js`, manifest) were fetched and checked. Working: day tabs, chart click and tooltip, map click, area picker, play, all activities, Listen (with Google voices for English and Hindi), Share / Download picture, BMC CSV, use my location (and the message when location is refused), Hindi and Marathi, the service worker, and the cloud status line. Broken, and fixed the same day:
+Every control was also clicked by hand in a real Chrome browser on the live site, and the backend files (`site/data/city.json`, `site/data/status.json`, `evidence/`, `sw.js`, manifest) were fetched and checked. Working: day tabs, chart click and tooltip, map click, area picker, play, all activities, Listen (with Google voices for English and Hindi), Share / Download picture, BMC CSV, use my location (and the message when location is refused), Hindi and Marathi, the service worker, and the cloud status line. Broken, and fixed the same day:
 
 | Problem found | Fix |
 |---|---|
@@ -146,7 +178,7 @@ Every control was also clicked by hand in a real Chrome browser on the live site
 | "Worst moment" could be a past, measured hour worded as a forecast | It now looks only at the hours ahead |
 | The BMC note said "hours above Moderate"; the ranking counts air above 60 µg/m³, which is Moderate or worse | Wording corrected in English, Hindi and Marathi |
 | The evidence page used four emoji icons and had no way back to the app | Drawn icons, and a "City app" link |
-| The pipeline text had a fixed check count | It now shows the count from the last cloud run (`data/status.json`) |
+| The pipeline text had a fixed check count | It now shows the count from the last cloud run (`site/data/status.json`) |
 | The share picture's file name was in the chosen script (e.g. Devanagari), which some phones handle badly | Plain names such as `airpulse-ME-2026-11-11.png` |
 
 ## Data (all from the challenge package or the ClimateVerse catalogue)
@@ -162,11 +194,11 @@ Every control was also clicked by hand in a real Chrome browser on the live site
 Static site, no build step:
 
 ```
-python3 -m http.server 8766
+cd site && python3 -m http.server 8766
 # open http://localhost:8766
 ```
 
-`scripts/build_city.py` and `scripts/build_data.py` produced `data/` and `evidence/data/` inside the competition codebase, which is kept separately.
+`scripts/build_city.py` and `scripts/build_data.py` produced `site/data/` and `site/evidence/data/` inside the competition codebase, which is kept separately.
 
 ## Honest limits
 

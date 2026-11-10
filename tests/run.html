@@ -1,10 +1,11 @@
 <!doctype html><meta charset="utf-8"><body><pre id="out">running</pre>
 <iframe id="f" style="width:1300px;height:900px"></iframe>
 <script>
+const ROOT = location.pathname.includes('/tests/') ? '../site/' : '../';   // repo: tests/ next to site/; source tree: _test/ inside the site
 const R = [], ok = (n, c, d = '') => R.push(`${c ? 'PASS' : 'FAIL'}  ${n}${d ? '  [' + d + ']' : ''}`);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const fire = (el, t) => el.dispatchEvent(new Event(t, { bubbles: true }));
-async function load(q) { const f = document.getElementById('f'); f.src = '../index.html' + q; await new Promise(r => f.onload = r);
+async function load(q) { const f = document.getElementById('f'); f.src = ROOT + 'index.html' + q; await new Promise(r => f.onload = r);
   const w = f.contentWindow; w.__errs = []; w.addEventListener('error', e => w.__errs.push(e.message)); await wait(2500); return [w, w.document]; }
 (async () => {
   let [w, d] = await load('?lang=en&ward=ME&hour=1');
@@ -70,7 +71,7 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
   { const c = $('#gcal'), u = c && new URL(c.href), q = u && u.searchParams;
     ok('Google Calendar: event for the cleanest hour', !!c && u.hostname === 'calendar.google.com' && q.get('action') === 'TEMPLATE' && /^\d{8}T\d{6}\/\d{8}T\d{6}$/.test(q.get('dates')) && q.get('ctz') === 'Asia/Kolkata' && q.get('dates').slice(9, 11) === txt('#answer').match(/(\d\d):00/)[1], c ? q.get('dates') + ' | ' + q.get('text') : 'missing');
     const m = new URL($('#gmaps').href); ok('Google Maps: opens the selected area', m.hostname === 'www.google.com' && /^1[89]\.\d+,72\.\d+$/.test(m.searchParams.get('query')), m.searchParams.get('query')); }
-  { const r = await fetch('../data/brief.json', { cache: 'no-store' }).catch(() => null), j = r && r.ok ? await r.json() : null, today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10), cur = !!(j && j.en && (j.for || []).some(x => x >= today));
+  { const r = await fetch(ROOT + 'data/brief.json', { cache: 'no-store' }).catch(() => null), j = r && r.ok ? await r.json() : null, today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10), cur = !!(j && j.en && (j.for || []).some(x => x >= today));
     ok('Gemini brief: shown only when current', $('#brief').hidden === !cur, 'current=' + cur);
     if (cur) ok('Gemini brief: text and model shown, no emoji', txt('#briefTxt').length > 20 && /gemini/i.test(txt('#briefNote')) && !/[\u{1F300}-\u{1FAFF}]/u.test(txt('#briefTxt'))); }
   ok('no script errors (en)', w.__errs.length === 0, w.__errs.join(' | '));
@@ -87,7 +88,7 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
     ok('phone: chart shows one readable day', d.querySelectorAll('#chart text.day').length === 1, d.querySelectorAll('#chart text.day').length);
     ok('phone: pipeline cards sit flat', [...d.querySelectorAll('#pipe .stage')].every(s => getComputedStyle(s).transform === 'none'));
     ok('phone: no script errors', w.__errs.length === 0, w.__errs.join(' | ')); f.style.width = '1300px'; }
-  { const f = document.getElementById('f'); f.src = '../evidence/index.html'; await new Promise(r => f.onload = r); const ew = f.contentWindow; ew.__errs = []; ew.addEventListener('error', e => ew.__errs.push(e.message)); await wait(3000);
+  { const f = document.getElementById('f'); f.src = ROOT + 'evidence/index.html'; await new Promise(r => f.onload = r); const ew = f.contentWindow; ew.__errs = []; ew.addEventListener('error', e => ew.__errs.push(e.message)); await wait(3000);
     const ed = ew.document; ok('evidence: page renders', ed.querySelectorAll('svg').length > 5 && /honestly forecast/.test(ed.body.innerText));
     ok('evidence: no emoji', !/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(ed.body.innerText));
     ok('evidence: link back to the app', !!ed.querySelector('a.back-app[href="../"]'));

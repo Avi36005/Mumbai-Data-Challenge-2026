@@ -1,2 +1,4 @@
 .DS_Store
 .firebase/
+.env
+__pycache__/
