@@ -74,17 +74,17 @@ def pick_model():
     pool = flash or [n for n in ok if n.startswith('gemini') and 'flash' in n] or [n for n in ok if n.startswith('gemini')]
     if not pool:
         raise RuntimeError('no Gemini text model available for this key')
-    return max(pool, key=lambda n: (ver(n), -len(n)))
+    return sorted(set(pool), key=lambda n: (ver(n), -len(n)), reverse=True)[:3]   # newest first; next ones are fallbacks
 
 
-def ask(f):
+def ask(f, model):
     body = {'contents': [{'parts': [{'text': PROMPT + json.dumps(f, ensure_ascii=False)}]}],
             'generationConfig': {'temperature': 0.2, 'responseMimeType': 'application/json',
                                  'responseSchema': {'type': 'OBJECT', 'properties': {k: {'type': 'STRING'} for k in ('en', 'hi', 'mr')},
                                                     'required': ['en', 'hi', 'mr']}}}
-    req = urllib.request.Request(f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent',
+    req = urllib.request.Request(f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
                                  data=json.dumps(body).encode(), headers={'Content-Type': 'application/json', 'x-goog-api-key': KEY})
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=120) as r:
         res = json.load(r)
     return json.loads(res['candidates'][0]['content']['parts'][0]['text'])
 
@@ -115,25 +115,24 @@ def main():
     f = facts()
     if not f['days']:
         print('gemini brief: no complete day for today or tomorrow, skipped'); return
-    global MODEL
-    if not MODEL:
+    try:
+        models = [MODEL] if MODEL else pick_model()
+    except Exception as e:
+        print('gemini brief: could not list models:', str(e)[:200]); return
+    print('gemini brief: models to try', models)
+    tries = [(m, k) for k in range(3) for m in models]   # busy model (503) or timeout: wait longer, then try the next model
+    for i, (model, k) in enumerate(tries):
         try:
-            MODEL = pick_model()
-        except Exception as e:
-            print('gemini brief: could not list models:', str(e)[:200]); return
-    print('gemini brief: model', MODEL)
-    for attempt in range(3):
-        try:
-            b = ask(f)
-        except Exception as e:  # network or quota: keep the previous brief, never fail the forecast
-            print('gemini brief: request failed:', str(e)[:200]); time.sleep(5); continue
+            b = ask(f, model)
+        except Exception as e:  # network, overload or quota: keep the previous brief, never fail the forecast
+            print(f'gemini brief: {model} failed:', str(e)[:160]); time.sleep(min(60, 10 * (k + 1))); continue
         why = check(f, b)
         if why is None:
-            out = {'model': MODEL, 'made': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%MZ'),
+            out = {'model': model, 'made': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%MZ'),
                    'for': [d['date'] for d in f['days']], 'facts': f, **{k: b[k].strip() for k in ('en', 'hi', 'mr')}}
             json.dump(out, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
             print('gemini brief: written for', out['for']); return
-        print('gemini brief: rejected (' + why + '), retrying')
+        print(f'gemini brief: {model} reply rejected (' + why + '), retrying')
     print('gemini brief: no valid brief this run; the previous one stays')
 
 
