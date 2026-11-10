@@ -58,6 +58,17 @@ firebase login
 firebase deploy --only hosting --project airpulse-mumbai-2026
 ```
 
+## The timeline: last week, today, and the days ahead
+
+| Days | What you see |
+|---|---|
+| **Past week** (from 4 Nov) | **Measured** PM2.5 at the four official stations (Zindi Train), spread to all 24 wards; Diwali nights included (e.g. Malad 354 µg/m³ on 8 Nov). Station outage hours are filled by the weather engine's day-before forecast and drawn in orange |
+| **Today** | Measured until the last Zindi reading, then forecast; a "last reading" line marks the switch |
+| **11–12 Nov** | Our submitted competition forecast |
+| **Later days** | The daily weather engine, one more day with each new GFS run |
+
+The day tabs say *Today* and *Tomorrow*, and each day says whether it is measured or forecast and which engine made it.
+
 ## Two forecast engines
 
 | Days | Engine | Inputs | Tested |
@@ -78,11 +89,11 @@ firebase deploy --only hosting --project airpulse-mumbai-2026
 
 ## Tests
 
-`tests/run.html` opens the app and clicks through every control in English, Hindi and Marathi. It checks 42 things: the KPIs, the chart, all 24 ward shapes on the map, the exposure counts, the BMC ranking, all six activities, the exposure planner, the share picture, the language switch, the white theme, no emoji, and no script errors.
+`tests/run.html` opens the app and clicks through every control in English, Hindi and Marathi. It checks 47 things, including the 9-day timeline (measured days, today, forecast days), the KPIs, the chart, all 24 ward shapes on the map, the exposure counts, the BMC ranking, all six activities, the exposure planner, the share picture, the language switch, the white theme, no emoji, and no script errors.
 
 ```bash
 python3 -m http.server 8766          # from the repo root
-# open http://localhost:8766/tests/run.html   ->   RESULT: 42 passed, 0 failed
+# open http://localhost:8766/tests/run.html   ->   RESULT: 47 passed, 0 failed
 ```
 
 ## Data (all from the challenge package or the ClimateVerse catalogue)

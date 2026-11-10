@@ -82,7 +82,21 @@ print(json.dumps(summary))
 # each later daily build only ADDS days that no earlier window covers (the submitted competition forecast is never overwritten).
 te = test.copy();te['location_id'] = te.location_id.astype(str);te['hour_start'] = te.hour_start.dt.tz_convert(IST)
 WIN = json.loads((H/'windows.json').read_text()) if (H/'windows.json').exists() else [{'start':'2026-11-11','base':'FINAL_UPLOAD_11-12Nov/FINAL_11-12Nov_CLIP125.csv','hi':'FINAL_UPLOAD_11-12Nov/FINAL_11-12Nov_CLIP125_NIGHTUPLIFT.csv','built':'2026-11-10 12:46 IST','note':'submitted competition forecast'}]
-parts = {'base':[],'hi':[]};covered = set();winfo = []
+parts = {'base':[],'hi':[]};covered = set();winfo = [];kind = {}
+# Measured days: the last week of real readings (Zindi Train) before the forecast. Gaps (outages) and the hours after the last release hour
+# are filled with the weather engine: the newest forecast run if available, else its day-before hindcast. Every hour is tagged m / f.
+MEAS_FROM = pd.Timestamp('2026-11-04',tz=IST);FIRST_FC = pd.Timestamp(WIN[0]['start'],tz=IST)
+obs = train.assign(hs=(pd.to_datetime(train.hour_end)-pd.Timedelta(hours=1)).dt.tz_convert(IST)).query('pm25<=1000').pivot_table(index='hs',columns='location_id',values='pm25')
+idx = pd.date_range(MEAS_FROM,FIRST_FC-pd.Timedelta(hours=1),freq='h');obs = obs.reindex(idx)[list(TARGET)]
+fill = pd.DataFrame(index=idx,columns=list(TARGET),dtype=float)
+for fn in ('store/wx_hindcast.csv','store/wx_forecasts.csv'):   # later file wins
+    if (H/fn).exists():
+        q = pd.read_csv(H/fn,dtype={'location_id':str});q['vt'] = pd.to_datetime(q.vt).dt.tz_convert(IST);q = q.pivot_table(index='vt',columns='location_id',values='p').reindex(idx)[list(TARGET)]
+        fill = q.combine_first(fill) if fn.endswith('forecasts.csv') else fill.combine_first(q)
+meas = obs.combine_first(fill);assert meas.notna().all().all(),'measured days have unfilled hours'
+for t_ in idx:kind[t_] = 'm' if obs.loc[t_].notna().sum()>=3 else 'f'
+parts['base'].append(meas);parts['hi'].append(meas.copy());covered |= set(idx.date)
+winfo.append({'days':sorted({str(d) for d in idx.date}),'note':'measured','built':'Zindi Train to '+str(train.hour_end.max())[:16],'filled_hours':int(obs.isna().any(axis=1).sum())})
 for wdef in WIN:
     S0 = pd.Timestamp(wdef['start'],tz=IST);w = te[(te.hour_start>=S0)&(te.hour_start<S0+pd.Timedelta(days=2))].copy();assert len(w)==192,(wdef,len(w))
     for k in ('base','hi'):w[k] = pd.read_csv(P/wdef[k]).set_index('ID').Target.reindex(w.ID).to_numpy()
@@ -105,7 +119,7 @@ fc = {k:pd.concat(v).sort_index() for k,v in parts.items()}
 days_all = sorted({t.date() for t in fc['base'].index});full = pd.date_range(pd.Timestamp(days_all[0],tz=IST),pd.Timestamp(days_all[-1],tz=IST)+pd.Timedelta(hours=23),freq='h')
 assert fc['base'].index.is_monotonic_increasing and len(fc['base'])%24==0 and len(fc['base'])==len(full),'forecast days must be contiguous'
 print('forecast days:',[x['days'] for x in winfo])
-hours = [t.strftime('%Y-%m-%dT%H:%M') for t in fc['base'].index];stations = []
+hours = [t.strftime('%Y-%m-%dT%H:%M') for t in fc['base'].index];kinds = ''.join(kind.get(t,'f') for t in fc['base'].index);stations = []
 for k_,nm in TARGET.items():stations.append({'name':nm,'lat':float(tpos.loc[k_,'latitude']),'lon':float(tpos.loc[k_,'longitude']),'kind':'forecast','base':[r1(v) for v in fc['base'][k_]],'hi':[r1(v) for v in fc['hi'][k_]]})
 for nm,m in models.items():
     v = next(r for r in val if r['station']==nm);tp = [tuple(tpos.loc[k]) for k in TARGET]
@@ -138,7 +152,7 @@ for f in json.load(open(H/'raw/wards.geojson'))['features']:
     geo['features'].append({'type':'Feature','properties':{'id':ab},'geometry':{'type':'Polygon','coordinates':[[[round(float(x),5),round(float(y),5)] for x,y in simp]]}})
 assert all(w_['pop']>0 for w_ in wards),[w_['id'] for w_ in wards if not w_['pop']]
 print('wards',len(wards),'pop',sum(w_['pop'] for w_ in wards),'schools',sum(w_['schools'] for w_ in wards),'students',sum(w_['students'] for w_ in wards),'| geo points',sum(len(f['geometry']['coordinates'][0]) for f in geo['features']))
-(OUT/'city.json').write_text(json.dumps({'hours':hours,'windows':winfo,'generated':pd.Timestamp.now(tz=IST).strftime('%Y-%m-%d %H:%M IST'),'wards':wards,'stations':stations,'validation':{'summary':summary,'wx':json.loads((H/'models/wx_validation.json').read_text()) if (H/'models/wx_validation.json').exists() else None,'stations':[{k:v for k,v in r.items()} for r in val]},
+(OUT/'city.json').write_text(json.dumps({'hours':hours,'kind':kinds,'windows':winfo,'generated':pd.Timestamp.now(tz=IST).strftime('%Y-%m-%d %H:%M IST'),'wards':wards,'stations':stations,'validation':{'summary':summary,'wx':json.loads((H/'models/wx_validation.json').read_text()) if (H/'models/wx_validation.json').exists() else None,'stations':[{k:v for k,v in r.items()} for r in val]},
     'sources':{'population':'BMC prabhag boundaries with population (ClimateVerse doi:10.71646/EREDWQ); Census-based, total %d'%sum(w_['pop'] for w_ in wards),
                'schools':'UDISE+ 2024-25, district Mumbai II, %d schools with a ward recorded (ClimateVerse doi:10.71646/XJIY8W)'%len(prof),'wards':'BMC administrative ward boundaries (ClimateVerse doi:10.71646/2DGEEJ)',
                'stations':'Zindi challenge package: Train.csv, AdditionalHistory (XKDR 2024, other Mumbai stations Oct 2026)'}},separators=(',',':')))

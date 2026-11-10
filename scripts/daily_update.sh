@@ -22,7 +22,7 @@ echo "[5/6] sync site and run the browser tests"
 rsync -a --exclude _test --exclude .DS_Store "$SITE/" "$DEP/"; mkdir -p "$DEP/tests"; cp "$SITE/_test/run.html" "$DEP/tests/run.html"
 V=$(date +%Y%m%d%H%M); sed -i '' -E "s#(app\.css|i18n\.js|app\.js)\?v=[0-9a-z]+#\1?v=$V#g" "$DEP/index.html"; sed -i '' -E "s#const CACHE = 'airpulse-[0-9a-z]+';#const CACHE = 'airpulse-$V';#; s#\?v=[0-9a-z]+'#?v=$V'#g" "$DEP/sw.js"
 ( cd "$DEP" && python3 -m http.server 8799 >/dev/null 2>&1 & echo $! > /tmp/airpulse_test_server.pid ); sleep 1
-RES=$("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --window-size=1400,1000 --virtual-time-budget=30000 --dump-dom "http://localhost:8799/tests/run.html" 2>/dev/null | grep -o "RESULT: [0-9]* passed, [0-9]* failed" || true)
+RES=$("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --window-size=1400,1000 --virtual-time-budget=90000 --dump-dom "http://localhost:8799/tests/run.html" 2>/dev/null | grep -o "RESULT: [0-9]* passed, [0-9]* failed" || true)
 kill "$(cat /tmp/airpulse_test_server.pid)" 2>/dev/null || true; echo "tests: ${RES:-not run}"
 case "$RES" in *", 0 failed") ;; *) echo "STOP: tests did not pass, nothing deployed"; exit 1;; esac
 echo "[6/6] deploy to Firebase and push to GitHub"

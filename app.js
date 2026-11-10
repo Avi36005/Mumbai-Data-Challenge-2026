@@ -28,6 +28,7 @@ const dayLabel = i => { const s = D.hours[i], y = +s.slice(0, 4), m = +s.slice(5
   return `${T('days')[wd]} ${d} ${T('months')[m - 1]}`; };
 const dayTab = dd => { const iso = D.hours[dd * 24].slice(0, 10), t = todayIST(), tm = new Date(Date.parse(t) + 864e5).toISOString().slice(0, 10);
   return iso === t ? `${T('today')} · ${dayLabel(dd * 24).split(' ').slice(1).join(' ')}` : iso === tm ? `${T('tomorrow')} · ${dayLabel(dd * 24).split(' ').slice(1).join(' ')}` : dayLabel(dd * 24); };
+const dayKind = dd => { const k = (D.kind || '').slice(dd * 24, dd * 24 + 24); return !k.includes('m') ? 'kForecast' : k.endsWith('ffff') && k.lastIndexOf('m') < 22 ? 'kToday' : 'kMeasured'; };
 const dayInfo = dd => (D.windows || []).find(w => w.days.includes(D.hours[dd * 24].slice(0, 10))) || {};
 const W = () => D.wards.find(w => w.id === S.ward);
 const dayIdx = d => [...Array(24)].map((_, k) => d * 24 + k);
@@ -60,14 +61,14 @@ function renderAll() { $('#ward').value = S.ward; renderDays(); renderHour(); re
 
 /* ---------- now card ---------- */
 function renderDays() {
-  const t0 = D.hours.findIndex(h => h.slice(0, 10) >= todayIST()), first = t0 >= 0 ? Math.max(0, Math.floor(t0 / 24)) : Math.max(0, NDAYS() - 3);
-  $('#days').innerHTML = [...Array(NDAYS())].map((_, d) => d).filter(d => d >= first || d === S.day).map(d => `<button role="tab" aria-selected="${S.day === d}" data-d="${d}">${dayTab(d)}</button>`).join('');
+  $('#days').innerHTML = [...Array(NDAYS())].map((_, d) => `<button role="tab" aria-selected="${S.day === d}" data-d="${d}"><span>${dayTab(d)}</span><small>${T(dayKind(d))}</small></button>`).join('');
+  const sel = $('#days').querySelector('[aria-selected="true"]'), strip = $('#days'); if (sel) strip.scrollLeft = sel.offsetLeft - strip.clientWidth / 2 + sel.clientWidth / 2;
   $$('#days button').forEach(b => b.onclick = () => { const d = +b.dataset.d; S.hour = d * 24 + (S.hour % 24); S.day = d; renderHour(); });
 }
 function renderHour() {
   const w = W(), i = S.hour, v = w.base[i], hi = w.hi[i], c = catI(v);
   $('#hour').value = i; $('#hourLabel').textContent = `${dayLabel(i)}, ${hh(hourOf(i))}`;
-  $('#kNowL').textContent = T('kNow', { t: hh(hourOf(i)) }); $('#nowVal').textContent = n0(v); $('#nowCat').textContent = T('cat')[c]; $('#nowCat').style.background = COL[c];
+  $('#kNowL').textContent = T('kNow', { t: hh(hourOf(i)) }) + ' · ' + T(isM(i) ? 'measured' : 'expected'); $('#nowVal').textContent = n0(v); $('#nowCat').textContent = T('cat')[c]; $('#nowCat').style.background = COL[c];
   $('#nowLinger').textContent = hi - v >= 3 ? T('linger', { v: `${n0(hi)} (${T('cat')[catI(hi)]})` }) : T('lingerSame');
   $$('#days button').forEach(b => b.setAttribute('aria-selected', +b.dataset.d === S.day));
   const di = dayIdx(S.day), mean = di.reduce((s, k) => s + w.base[k], 0) / 24;
@@ -76,33 +77,39 @@ function renderHour() {
   $('#cig').textContent = n1(mean / 22); $('#best').textContent = hh(hourOf(best)); $('#bestSub').textContent = `${n0(w.base[best])} µg/m³ · ${T('cat')[catI(w.base[best])]}`;
   $('#worst').textContent = hh(hourOf(worst)); $('#worstSub').textContent = `${T('upto', { v: n0(w.hi[worst]) })}`;
   $('#chartH').textContent = T('chartH', { w: w.area }); const inf = dayInfo(S.day);
-  $('#srcTag').textContent = inf.note === 'daily weather engine' ? T('srcWx', { r: (inf.gfs_run || '').replace('T', ' ') }) : T('srcComp');
+  $('#srcTag').textContent = inf.note === 'daily weather engine' ? T('srcWx', { r: (inf.gfs_run || '').replace('T', ' ') }) : inf.note === 'measured' ? T(dayKind(S.day) === 'kToday' ? 'srcToday' : 'srcMeas') : T('srcComp');
   drawChart(); paintMap(); renderPlan(); drawCard(); if (S.lastDay !== S.day) { S.lastDay = S.day; renderMyDay(); renderRank(); }
 }
 
-/* ---------- hourly chart (plain SVG) ---------- */
+/* ---------- hourly chart (plain SVG): a 3-day window around the selected day; measured hours dark, forecast orange ---------- */
+const isM = k => (D.kind || '')[k] === 'm';
 function drawChart() {
-  const svg = $('#chart'), W_ = svg.clientWidth || 800, H_ = svg.clientHeight || 340, m = { l: 44, r: 92, t: 30, b: 42 }, w = W(), n = D.hours.length;
-  const iw = W_ - m.l - m.r, ih = H_ - m.t - m.b, top = Math.max(100, Math.ceil(Math.max(...w.hi) * 1.15 / 20) * 20);
-  const X = k => m.l + iw * k / (n - 1), Y = v => m.t + ih * (1 - Math.min(v, top) / top);
+  const svg = $('#chart'), W_ = svg.clientWidth || 800, H_ = svg.clientHeight || 340, m = { l: 44, r: 92, t: 30, b: 42 }, w = W(), N = D.hours.length;
+  const d0 = Math.max(0, Math.min(S.day - 1, NDAYS() - 3)), k0 = d0 * 24, k1 = Math.min(N - 1, k0 + 71), n = k1 - k0 + 1;
+  const seg = w.hi.slice(k0, k1 + 1), iw = W_ - m.l - m.r, ih = H_ - m.t - m.b, top = Math.max(100, Math.min(300, Math.ceil(Math.max(...seg) * 1.12 / 20) * 20));
+  const X = k => m.l + iw * (k - k0) / (n - 1), Y = v => m.t + ih * (1 - Math.min(v, top) / top);
   let g = '', lo = 0;
   CUT.forEach((c, j) => { const a = lo, b = Math.min(c, top); if (b > a) { g += `<rect x="${m.l}" y="${Y(b)}" width="${iw}" height="${Y(a) - Y(b)}" fill="${COL[j]}" opacity=".08"/>`;
-    if (Y(a) - Y(b) > 14) g += `<text class="bandlab" x="${m.l + iw + 8}" y="${(Y(a) + Y(b)) / 2 + 4}" fill="${COL[j]}" style="fill:${COL[j]}">${T('cat')[j]}</text>`; } lo = c; });
-  for (let v = 0; v <= top; v += top > 160 ? 40 : 20) g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3e7ef"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
-  for (let d = 0; d < n / 24; d++) { const x0 = X(d * 24); g += `<line x1="${x0}" x2="${x0}" y1="${m.t}" y2="${m.t + ih + 34}" stroke="#cfd5e0"/><text class="day" x="${x0 + 6}" y="${m.t + ih + 36}">${dayLabel(d * 24)}</text>`;
-    [6, 12, 18].forEach(h => { const k = d * 24 + h; if (k < n) g += `<text x="${X(k)}" y="${m.t + ih + 18}" text-anchor="middle">${hh(h)}</text>`; }); }
-  const path = arr => arr.map((v, k) => `${k ? 'L' : 'M'}${X(k).toFixed(1)},${Y(v).toFixed(1)}`).join('');
-  const area = path(w.hi) + w.base.map((v, k) => `L${X(n - 1 - k).toFixed(1)},${Y(w.base[n - 1 - k]).toFixed(1)}`).join('') + 'Z';
-  g += `<path d="${area}" fill="#e03131" opacity=".10"/><path d="${path(w.hi)}" fill="none" stroke="#e03131" stroke-width="2" stroke-dasharray="6 4"/><path d="${path(w.base)}" fill="none" stroke="#e8590c" stroke-width="3"/>`;
-  const i = S.hour; g += `<line x1="${X(i)}" x2="${X(i)}" y1="${m.t}" y2="${m.t + ih}" stroke="#0f172a" stroke-dasharray="3 3"/><circle cx="${X(i)}" cy="${Y(w.base[i])}" r="6" fill="#e8590c" stroke="#fff" stroke-width="2.5"/>`;
+    if (Y(a) - Y(b) > 14) g += `<text class="bandlab" x="${m.l + iw + 8}" y="${(Y(a) + Y(b)) / 2 + 4}" style="fill:${COL[j]}">${T('cat')[j]}</text>`; } lo = c; });
+  for (let v = 0; v <= top; v += top > 160 ? 50 : 20) g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3e7ef"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
+  for (let d = d0; d * 24 <= k1; d++) { const x0 = X(d * 24); g += `<line x1="${x0}" x2="${x0}" y1="${m.t}" y2="${m.t + ih + 34}" stroke="#cfd5e0"/><text class="day" x="${x0 + 6}" y="${m.t + ih + 36}">${dayTab(d)}</text>`;
+    [6, 12, 18].forEach(h => { const k = d * 24 + h; if (k <= k1) g += `<text x="${X(k)}" y="${m.t + ih + 18}" text-anchor="middle">${hh(h)}</text>`; }); }
+  const ks = [...Array(n)].map((_, j) => k0 + j), P = (arr, sel) => { let s = '', on = false; ks.forEach(k => { if (sel(k)) { s += `${on ? 'L' : 'M'}${X(k).toFixed(1)},${Y(arr[k]).toFixed(1)}`; on = true; } else on = false; }); return s; };
+  const fk = k => !isM(k) || (k > k0 && !isM(k - 1)) || (k < k1 && !isM(k + 1)), diff = ks.some(k => w.hi[k] - w.base[k] > 1);
+  if (diff) { const area = ks.map((k, j) => `${j ? 'L' : 'M'}${X(k).toFixed(1)},${Y(w.hi[k]).toFixed(1)}`).join('') + ks.slice().reverse().map(k => `L${X(k).toFixed(1)},${Y(w.base[k]).toFixed(1)}`).join('') + 'Z';
+    g += `<path d="${area}" fill="#e03131" opacity=".10"/><path d="${P(w.hi, k => !isM(k))}" fill="none" stroke="#e03131" stroke-width="2" stroke-dasharray="6 4"/>`; }
+  g += `<path d="${P(w.base, fk)}" fill="none" stroke="#e8590c" stroke-width="3"/><path d="${P(w.base, k => isM(k))}" fill="none" stroke="#0f172a" stroke-width="2.2"/>`;
+  ks.filter(k => w.base[k] > top).forEach(k => g += `<circle cx="${X(k)}" cy="${m.t + 3}" r="2.5" fill="#a61e4d"/>`);
+  const lastM = ks.filter(isM).pop(); if (lastM != null && lastM < k1) g += `<text x="${X(lastM) + 4}" y="${m.t + 14}" style="fill:#0f172a;font-weight:700">${T('lastReading')}</text><line x1="${X(lastM)}" x2="${X(lastM)}" y1="${m.t}" y2="${m.t + ih}" stroke="#0f172a" stroke-width="1"/>`;
+  const i = Math.min(Math.max(S.hour, k0), k1); g += `<line x1="${X(i)}" x2="${X(i)}" y1="${m.t}" y2="${m.t + ih}" stroke="#0f172a" stroke-dasharray="3 3"/><circle cx="${X(i)}" cy="${Y(w.base[i])}" r="6" fill="${isM(i) ? '#0f172a' : '#e8590c'}" stroke="#fff" stroke-width="2.5"/>`;
   const lx = Math.min(Math.max(X(i), m.l + 50), m.l + iw - 50); g += `<rect x="${lx - 48}" y="${m.t - 26}" width="96" height="22" rx="6" fill="#0f172a"/><text x="${lx}" y="${m.t - 11}" text-anchor="middle" style="fill:#fff;font-weight:700">${hh(hourOf(i))} · ${n0(w.base[i])}</text>`;
   g += `<rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" id="chartHit"/>`;
   svg.setAttribute('viewBox', `0 0 ${W_} ${H_}`); svg.innerHTML = g;
-  const pick = e => { const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W_ / r.width; return Math.max(0, Math.min(n - 1, Math.round((x - m.l) / iw * (n - 1)))); };
-  const hit = $('#chartHit'); hit.onmousemove = e => { const k = pick(e); showTip(e, `<b>${dayLabel(k)}, ${hh(hourOf(k))}</b><br>${T('expected')}: ${n0(w.base[k])} (${T('cat')[catI(w.base[k])]})<br>${T('lingerShort')}: ${n0(w.hi[k])}`); };
+  const pick = e => { const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W_ / r.width; return Math.max(k0, Math.min(k1, k0 + Math.round((x - m.l) / iw * (n - 1)))); };
+  const hit = $('#chartHit'); hit.onmousemove = e => { const k = pick(e); showTip(e, `<b>${dayLabel(k)}, ${hh(hourOf(k))}</b><br>${isM(k) ? T('measured') : T('expected')}: ${n0(w.base[k])} (${T('cat')[catI(w.base[k])]})${!isM(k) && w.hi[k] - w.base[k] > 1 ? `<br>${T('lingerShort')}: ${n0(w.hi[k])}` : ''}`); };
   hit.onmouseleave = hideTip; hit.onclick = e => { S.hour = pick(e); S.day = Math.floor(S.hour / 24); renderHour(); };
 }
-function buildLegend() { $('#chartLegend').innerHTML = `<span><i style="background:#e8590c"></i>${T('expected')}</span><span><i class="dash"></i>${T('lingerShort')}</span><span><i class="sq" style="background:#e03131;opacity:.25"></i>${T('range')}</span>`;
+function buildLegend() { $('#chartLegend').innerHTML = `<span><i style="background:#0f172a"></i>${T('measured')}</span><span><i style="background:#e8590c"></i>${T('expected')}</span><span><i class="dash"></i>${T('lingerShort')}</span><span><i class="sq" style="background:#e03131;opacity:.25"></i>${T('range')}</span>`;
   $('#legend').innerHTML = COL.map((c, i) => `<span><i class="sq" style="background:${c}"></i>${T('cat')[i]}</span>`).join('') + `<span><i class="dot big"></i>${T('stF')}</span><span><i class="dot"></i>${T('stE')}</span>`; }
 const tipEl = () => $('#tip');
 function showTip(e, html) { const t = tipEl(); t.innerHTML = html; t.style.opacity = 1; t.style.left = Math.min(e.clientX + 14, innerWidth - 270) + 'px'; t.style.top = (e.clientY + 14) + 'px'; }

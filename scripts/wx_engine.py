@@ -66,6 +66,12 @@ if __name__=='__main__':
                'bias_model':round(float((u.p-u.y).mean()),2),'daily_rmse_model':round(rm(daily.p,daily.y),2),'daily_rmse_recent60':round(rm(daily.b60,daily.y),2),
                'daily_corr_model':round(float(np.corrcoef(daily.p,daily.y)[0,1]),3),'daily_corr_recent60':round(float(np.corrcoef(daily.b60,daily.y)[0,1]),3),'by_station':{s:round(rm(g.p,g.y),2) for s,g in u.groupby('location_id')}}
         res['gain_vs_recent60_pct'] = round(100*(1-res['rmse_model']/res['rmse_recent60']),1);print(json.dumps(res,indent=1));(H/'models').mkdir(exist_ok=True);(H/'models/wx_validation.json').write_text(json.dumps(res,indent=1))
+    elif mode=='hindcast':   # what the engine would have said the day before (newest run issued 18-42 h ahead), for filling gaps in measured days
+        import lightgbm
+        table,a,b = Path(sys.argv[2]),pd.Timestamp(sys.argv[3],tz=IST),pd.Timestamp(sys.argv[4],tz=IST);bst = lightgbm.Booster(model_file=str(H/'models/wx_lgbm.txt'))
+        x = weather_rows(table);x = x[(x.vt>=a)&(x.vt<b)&x.lead.between(18,42)].sort_values('cycle').drop_duplicates(['location_id','vt'],keep='last')
+        x = x.assign(p=np.expm1(bst.predict(x[FEAT])));(H/'store').mkdir(exist_ok=True)
+        x[['vt','location_id','p','cycle','lead']].sort_values(['vt','location_id']).to_csv(H/'store/wx_hindcast.csv',index=False);print('hindcast hours',x.vt.nunique(),x.vt.min(),x.vt.max())
     elif mode=='forecast':
         import lightgbm
         table = Path(sys.argv[2]);bst = lightgbm.Booster(model_file=str(H/'models/wx_lgbm.txt'))
