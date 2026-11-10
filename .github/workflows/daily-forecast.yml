@@ -31,7 +31,7 @@ jobs:
           V=$(date -u +%Y%m%d%H%M)
           sed -i -E "s#(app\.css|i18n\.js|app\.js)\?v=[0-9a-z]+#\1?v=$V#g" index.html
           sed -i -E "s#const CACHE = 'airpulse-[0-9a-z]+';#const CACHE = 'airpulse-$V';#; s#\?v=[0-9a-z]+'#?v=$V'#g" sw.js
-      - name: Browser tests (47 checks, EN / HI / MR); nothing is published if one fails
+      - name: Browser tests (51 checks, EN / HI / MR); nothing is published if one fails
         run: |
           python3 -m http.server 8799 > /dev/null 2>&1 &
           sleep 2
