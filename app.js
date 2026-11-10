@@ -330,7 +330,7 @@ function drawCard() {
 function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 function wrap(g, text, x, y, mw, lh) { const words = text.split(' '); let line = ''; for (const wd of words) { const t = line ? line + ' ' + wd : wd; if (g.measureText(t).width > mw && line) { g.fillText(line, x, y); line = wd; y += lh; } else line = t; } g.fillText(line, x, y); }
 function shareCard(dl) {
-  $('#card').toBlob(async b => { const f = new File([b], `airpulse-${S.ward}-${dayLabel(S.day * 24).replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+  $('#card').toBlob(async b => { const f = new File([b], `airpulse-${S.ward}-${D.hours[S.day * 24].slice(0, 10)}.png`, { type: 'image/png' });
     if (!dl && navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: 'AirPulse Mumbai' }); return; } catch (e) { if (e.name === 'AbortError') return; } }
     const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, 'image/png');
 }

@@ -141,6 +141,7 @@ Every control was also clicked by hand in a real Chrome browser on the live site
 | The BMC note said "hours above Moderate"; the ranking counts air above 60 µg/m³, which is Moderate or worse | Wording corrected in English, Hindi and Marathi |
 | The evidence page used four emoji icons and had no way back to the app | Drawn icons, and a "City app" link |
 | The pipeline text had a fixed check count | It now shows the count from the last cloud run (`data/status.json`) |
+| The share picture's file name was in the chosen script (e.g. Devanagari), which some phones handle badly | Plain names such as `airpulse-ME-2026-11-11.png` |
 
 ## Data (all from the challenge package or the ClimateVerse catalogue)
 
