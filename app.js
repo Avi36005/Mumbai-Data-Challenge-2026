@@ -42,6 +42,7 @@ function init() {
   const now = new Date(), idx = D.hours.findIndex(h => Math.abs(new Date(h + ':00+05:30') - now) < 1800e3), td = D.hours.findIndex(h => h.slice(0, 10) === todayIST());
   const qh = new URLSearchParams(location.search).get('hour');
   $('#hour').max = D.hours.length - 1;
+  S.nowIdx = idx >= 0 ? idx : null;
   S.hour = qh != null && +qh >= 0 && +qh < D.hours.length ? +qh : idx >= 0 ? idx : td >= 0 ? td + 8 : D.hours.length > 48 ? D.hours.length - 48 + 8 : 8; S.day = Math.floor(S.hour / 24);
   $('#ward').innerHTML = D.wards.slice().sort((a, b) => a.area.localeCompare(b.area)).map(w => `<option value="${w.id}">${w.area} (${w.ward})</option>`).join('');
   $('#ward').onchange = e => { S.ward = e.target.value; save(); renderAll(); };
@@ -57,7 +58,20 @@ function applyLang() {
   document.documentElement.lang = lang; $$('.langs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
   $$('[data-t]').forEach(el => el.textContent = T(el.dataset.t)); $('#sources').textContent = T('sources'); if (D) buildLegend();
 }
-function renderAll() { $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
+function renderAll() { renderHero(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
+
+/* ---------- hero: right now in Mumbai ---------- */
+function renderHero() {
+  const i = S.nowIdx != null ? S.nowIdx : S.hour, pop = D.wards.reduce((a, w) => a + w.pop, 0), city = D.wards.reduce((a, w) => a + w.base[i] * w.pop, 0) / pop, c = catI(city);
+  const top = D.wards.slice().sort((a, b) => b.base[i] - a.base[i]), clean = top[top.length - 1], d = Math.floor(i / 24);
+  const hrs = dayIdx(d).filter(k => hourOf(k) >= 6 && hourOf(k) <= 21), cm = k => D.wards.reduce((a, w) => a + w.base[k] * w.pop, 0) / pop, bt = hrs.reduce((a, k) => cm(k) < cm(a) ? k : a, hrs[0]);
+  $('#heroCard').innerHTML = `<div class="hc-top"><span class="k">${T(S.nowIdx != null ? 'heroNow' : 'heroAt')} · ${dayLabel(i)}, ${hh(hourOf(i))}</span><span class="live"><i></i>${T(isM(i) ? 'measured' : 'expected')}</span></div>
+    <div class="hc-main"><b>${n0(city)}</b><div><span class="band" style="background:${COL[c]}">${T('cat')[c]}</span><br><small>µg/m³ · ${T('heroCity')}</small></div></div>
+    <p class="hc-sub">${T('heroWorst')}</p><ul class="hc-list">${top.slice(0, 3).map(w => `<li><span class="sw" style="background:${colOf(w.base[i])}"></span>${w.area}<span>${n0(w.base[i])}</span></li>`).join('')}</ul>
+    <div class="hc-grid"><div><span class="k">${T('heroBest')}</span><b>${clean.area}</b></div><div><span class="k">${T('heroBestTime')}</span><b>${hh(hourOf(bt))}</b></div></div>`;
+  const days = new Set(D.hours.map(h => h.slice(0, 10))).size;
+  $('#heroChips').innerHTML = [[24, T('chipWards')], [D.stations.length, T('chipStations')], [days, T('chipDays')], [T('chipLang'), ''], [T('chipUpdated'), D.generated || '']].map(([a, b]) => `<span><b>${a}</b> ${b}</span>`).join('');
+}
 
 /* ---------- now card ---------- */
 function renderDays() {
