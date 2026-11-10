@@ -152,6 +152,11 @@ for f in json.load(open(H/'raw/wards.geojson'))['features']:
     geo['features'].append({'type':'Feature','properties':{'id':ab},'geometry':{'type':'Polygon','coordinates':[[[round(float(x),5),round(float(y),5)] for x,y in simp]]}})
 assert all(w_['pop']>0 for w_ in wards),[w_['id'] for w_ in wards if not w_['pop']]
 print('wards',len(wards),'pop',sum(w_['pop'] for w_ in wards),'schools',sum(w_['schools'] for w_ in wards),'students',sum(w_['students'] for w_ in wards),'| geo points',sum(len(f['geometry']['coordinates'][0]) for f in geo['features']))
+# Parameters for the cloud updater (cloud/cloud_update.py): the same ridge transfer + IDW, applied to new engine days without any Zindi files.
+CL = H/'cloud';CL.mkdir(exist_ok=True)
+(CL/'transfer.json').write_text(json.dumps({'target_order':list(TARGET),'target_pos':[[float(tpos.loc[k,'latitude']),float(tpos.loc[k,'longitude'])] for k in TARGET],
+    'stations':[{'name':nm,'lat':next(r for r in val if r['station']==nm)['lat'],'lon':next(r for r in val if r['station']==nm)['lon'],'coef':[float(c) for c in m.coef_],'intercept':float(m.intercept_)} for nm,m in models.items()],
+    'note':'design = [log1p(PM of the 4 targets), their mean, sin/cos(2*pi*h/24), sin/cos(4*pi*h/24)]; estimate = 0.5*expm1(coef.x+b) + 0.5*IDW(4 targets); ward = IDW(26 stations), p=2, min 0.3 km'},indent=1))
 (OUT/'city.json').write_text(json.dumps({'hours':hours,'kind':kinds,'windows':winfo,'generated':pd.Timestamp.now(tz=IST).strftime('%Y-%m-%d %H:%M IST'),'wards':wards,'stations':stations,'validation':{'summary':summary,'wx':json.loads((H/'models/wx_validation.json').read_text()) if (H/'models/wx_validation.json').exists() else None,'stations':[{k:v for k,v in r.items()} for r in val]},
     'sources':{'population':'BMC prabhag boundaries with population (ClimateVerse doi:10.71646/EREDWQ); Census-based, total %d'%sum(w_['pop'] for w_ in wards),
                'schools':'UDISE+ 2024-25, district Mumbai II, %d schools with a ward recorded (ClimateVerse doi:10.71646/XJIY8W)'%len(prof),'wards':'BMC administrative ward boundaries (ClimateVerse doi:10.71646/2DGEEJ)',

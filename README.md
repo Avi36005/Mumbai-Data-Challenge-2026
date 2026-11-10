@@ -44,7 +44,7 @@ Links can preselect language, ward and hour: `?lang=mr&ward=ME&hour=1`.
 | Google tool | What we use it for | Where in this repo |
 |---|---|---|
 | **Firebase Hosting** | Serves the live app at `airpulse-mumbai-2026.web.app` over HTTPS on Google's global CDN; data files are cached for 5 minutes so a forecast refresh shows up quickly | `firebase.json`, `.firebaserc`; deployed with `firebase deploy --only hosting` |
-| **Google Cloud** | The Firebase project `airpulse-mumbai-2026` is a Google Cloud project; it is the home for the hosting and the next backend services | Firebase console → project `airpulse-mumbai-2026` |
+| **Google Cloud** | The Firebase project `airpulse-mumbai-2026` is a Google Cloud project. A hosting-only service account (IAM) lets the cloud job publish each new forecast | Firebase console → project `airpulse-mumbai-2026`; `.github/workflows/daily-forecast.yml` |
 | **Google Fonts** | *DM Sans* for Latin text and *Noto Sans Devanagari* (Google's Noto family) so Hindi and Marathi render cleanly on every phone | `<link>` in `index.html` |
 | **Google text-to-speech voices** (Chrome and Android, through the Web Speech API) | The 🔊 **Listen** button reads the forecast, the advice and the personal plan aloud in English, Hindi or Marathi; on Android and Chrome these are Google's voices. Marathi falls back to Hindi when no Marathi voice is installed | `speak()` in `app.js` |
 
@@ -69,6 +69,23 @@ firebase deploy --only hosting --project airpulse-mumbai-2026
 
 The day tabs say *Today* and *Tomorrow*, and each day says whether it is measured or forecast and which engine made it.
 
+## Cloud backend: no laptop, no person
+
+The application updates itself in the cloud, from `.github/workflows/daily-forecast.yml` (GitHub Actions). It runs twice a day at 11:15 and 23:30 IST, after each new NOAA GFS run is published, and can also be started by hand.
+
+| Step | What runs | Where |
+|---|---|---|
+| 1. Weather | Downloads the newest NOAA GFS runs (1°, forecast hours 6–81) from the NOAA Open Data bucket on AWS and reads six fields at the four stations with ecCodes | `cloud/cloud_update.py` |
+| 2. Forecast | Daily weather engine (`cloud/wx_lgbm.txt`, LightGBM); the newest run wins for every hour; history kept in `cloud/store.csv` | `cloud/cloud_update.py` |
+| 3. City | 4 → 26 stations (ridge transfer + distance weighting, `cloud/transfer.json`), then 24 wards; adds every complete new day after the fixed part (`cloud/base_city.json`: measured week + submitted 11–12 Nov forecast) | `cloud/cloud_update.py` |
+| 4. Quality gate | The 51 browser checks in headless Chrome, in all three languages; **nothing is published if one fails** | workflow |
+| 5. Publish | Firebase Hosting (Google Cloud) through a hosting-only service account kept as the encrypted secret `FIREBASE_SERVICE_ACCOUNT` | `FirebaseExtended/action-hosting-deploy` |
+| 6. Record | Commits `data/city.json`, `data/status.json` and `cloud/store.csv` back to this repository | workflow |
+
+**Checked against the local pipeline:** the cloud's own GFS download matches the competition's weather tables exactly (624 values, difference 0.0). The cloud engine also matches the local engine exactly (348 hours, difference 0.0).
+
+The **How AirPulse works** panel in the app shows this pipeline, with a live status line read from `data/status.json`: last update, the GFS run used, the date the forecast runs to, what ran it, and the checks passed.
+
 ## Two forecast engines
 
 | Days | Engine | Inputs | Tested |
@@ -89,11 +106,11 @@ The day tabs say *Today* and *Tomorrow*, and each day says whether it is measure
 
 ## Tests
 
-`tests/run.html` opens the app and clicks through every control in English, Hindi and Marathi. It checks 47 things, including the 9-day timeline (measured days, today, forecast days), the KPIs, the chart, all 24 ward shapes on the map, the exposure counts, the BMC ranking, all six activities, the exposure planner, the share picture, the language switch, the white theme, no emoji, and no script errors.
+`tests/run.html` opens the app and clicks through every control in English, Hindi and Marathi. It checks 51 things, including the 9-day timeline (measured days, today, forecast days), the KPIs, the chart, all 24 ward shapes on the map, the exposure counts, the BMC ranking, all six activities, the exposure planner, the share picture, the language switch, the white theme, no emoji, and no script errors.
 
 ```bash
 python3 -m http.server 8766          # from the repo root
-# open http://localhost:8766/tests/run.html   ->   RESULT: 47 passed, 0 failed
+# open http://localhost:8766/tests/run.html   ->   RESULT: 51 passed, 0 failed
 ```
 
 ## Data (all from the challenge package or the ClimateVerse catalogue)

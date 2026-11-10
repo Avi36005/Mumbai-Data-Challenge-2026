@@ -34,6 +34,10 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
   ok('trust: 5 cards', $$('#trustGrid > div').length === 5, $$('#trustGrid > div').length);
   ok('day tab says Today/Tomorrow or a date', $$('#days button').every(b => b.textContent.length > 4));
   ok('forecast source shown', txt('#srcTag').length > 10, txt('#srcTag'));
+  ok('pipeline: 6 stages', $$('#pipe .stage').length === 6, $$('#pipe .stage').length);
+  ok('pipeline: Google tools marked', $$('#pipe .g-tool').length >= 3, $$('#pipe .g-tool').length);
+  ok('pipeline stages visible', $$('#pipe .stage').every(s => getComputedStyle(s).opacity === '1'));
+  ok('hero card filled', /\d/.test(txt('#heroCard')) && $$('#heroCard .hc-list li').length === 3);
   const cv = $('#card'), px = cv.getContext('2d').getImageData(960, 450, 1, 1).data; ok('share card drawn', px[3] === 255 && !(px[0] === 255 && px[1] === 255 && px[2] === 255), px.join(','));
   ok('legend filled', $$('#chartLegend span').length === 4 && $$('#legend span').length === 8);
   // interactions

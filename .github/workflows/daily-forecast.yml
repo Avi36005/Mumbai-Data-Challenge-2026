@@ -1,0 +1,60 @@
+# Mumbai AirPulse cloud backend: no laptop, no human.
+# Twice a day: newest NOAA GFS run -> weather engine -> 26 stations -> 24 wards -> 47 browser tests -> Firebase Hosting -> commit data here.
+name: Daily forecast
+on:
+  schedule:
+    - cron: '45 5 * * *'    # 11:15 IST (after the 00Z GFS run is published)
+    - cron: '0 18 * * *'    # 23:30 IST (after the 12Z run)
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: daily-forecast
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ecCodes and Python packages
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libeccodes0 libeccodes-dev > /dev/null
+          pip install -q -r cloud/requirements.txt
+      - name: Forecast (NOAA GFS -> engine -> wards)
+        run: python cloud/cloud_update.py
+      - name: Cache-busting version stamp
+        run: |
+          V=$(date -u +%Y%m%d%H%M)
+          sed -i -E "s#(app\.css|i18n\.js|app\.js)\?v=[0-9a-z]+#\1?v=$V#g" index.html
+          sed -i -E "s#const CACHE = 'airpulse-[0-9a-z]+';#const CACHE = 'airpulse-$V';#; s#\?v=[0-9a-z]+'#?v=$V'#g" sw.js
+      - name: Browser tests (47 checks, EN / HI / MR); nothing is published if one fails
+        run: |
+          python3 -m http.server 8799 > /dev/null 2>&1 &
+          sleep 2
+          google-chrome --headless=new --no-sandbox --disable-gpu --window-size=1400,1000 --virtual-time-budget=90000 --dump-dom http://localhost:8799/tests/run.html > /tmp/t.html 2>/dev/null || true
+          RES=$(grep -o "RESULT: [0-9]* passed, [0-9]* failed" /tmp/t.html || echo "RESULT: tests did not finish")
+          echo "$RES" | tee /tmp/result.txt
+          grep -q ", 0 failed" /tmp/result.txt
+          python3 - <<'PY'
+          import json,re
+          s=json.load(open('data/status.json'));r=open('/tmp/result.txt').read();m=re.search(r'(\d+) passed, (\d+) failed',r)
+          s['tests']={'passed':int(m.group(1)),'failed':int(m.group(2))} if m else None;json.dump(s,open('data/status.json','w'),indent=1)
+          PY
+      - name: Publish to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: airpulse-mumbai-2026
+          channelId: live
+      - name: Commit the new forecast
+        run: |
+          git config user.name "Avi36005"
+          git config user.email "177668299+Avi36005@users.noreply.github.com"
+          git add data/city.json data/status.json cloud/store.csv
+          git diff --cached --quiet || git commit -q -m "Cloud forecast update $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M IST')"
+          git push -q

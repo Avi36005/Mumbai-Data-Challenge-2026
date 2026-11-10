@@ -34,6 +34,7 @@ const W = () => D.wards.find(w => w.id === S.ward);
 const dayIdx = d => [...Array(24)].map((_, k) => d * 24 + k);
 const NDAYS = () => D.hours.length / 24;
 
+let STATUS = null; fetch('data/status.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => { STATUS = j; STATUS_CHANGED = true; if (D) renderPipe(); }).catch(() => {});
 fetch('data/city.json').then(r => r.json()).then(c => { D = c; return fetch('data/wards.geo.json'); }).then(r => r.json()).then(g => { GEO = g; init(); })
   .catch(e => { $('main').insertAdjacentHTML('afterbegin', `<p class="card">Could not load data (${e}). Serve this folder over http.</p>`); });
 
@@ -58,7 +59,7 @@ function applyLang() {
   document.documentElement.lang = lang; $$('.langs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
   $$('[data-t]').forEach(el => el.textContent = T(el.dataset.t)); $('#sources').textContent = T('sources'); if (D) buildLegend();
 }
-function renderAll() { renderHero(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
+function renderAll() { renderHero(); renderPipe(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
 
 /* ---------- hero: right now in Mumbai ---------- */
 function renderHero() {
@@ -71,6 +72,21 @@ function renderHero() {
     <div class="hc-grid"><div><span class="k">${T('heroBest')}</span><b>${clean.area}</b></div><div><span class="k">${T('heroBestTime')}</span><b>${hh(hourOf(bt))}</b></div></div>`;
   const days = new Set(D.hours.map(h => h.slice(0, 10))).size;
   $('#heroChips').innerHTML = [[24, T('chipWards')], [D.stations.length, T('chipStations')], [days, T('chipDays')], [T('chipLang'), ''], [T('chipUpdated'), D.generated || '']].map(([a, b]) => `<span><b>${a}</b> ${b}</span>`).join('');
+}
+
+/* ---------- how it works: pipeline + live status ---------- */
+function renderPipe() {
+  const G = `<span class="g-tool">Google</span>`, fill = t => t.replace('{G}', G);
+  if ($('#pipe').dataset.lang === lang && !STATUS_CHANGED) { paintStatus(); return; } $('#pipe').dataset.lang = lang; STATUS_CHANGED = false;
+  $('#pipe').innerHTML = T('pipe').map(([h, items], i) => `<div class="stage" style="--i:${i}"><span class="no">${String(i + 1).padStart(2, '0')}</span><h3>${h}</h3><ul>${items.map(x => `<li><i></i><span>${fill(x)}</span></li>`).join('')}</ul><span class="dot"></span></div>`).join('');
+  paintStatus();
+}
+let STATUS_CHANGED = false;
+function paintStatus() {
+  const st = STATUS || {}, tests = st.tests ? `<span class="ok"><b>${st.tests.passed}</b> ${T('stTests')}</span>` : '';
+  $('#status').innerHTML = [[T('stUpdated'), st.updated || D.generated || ''], [T('stRun'), st.gfs_run ? st.gfs_run.replace('T', ' ') : '–'], [T('stTo'), (st.forecast_to || D.hours[D.hours.length - 1]).replace('T', ' ')], [T('stBy'), st.runner || '–']]
+    .map(([k, v]) => `<span>${k} <b>${v}</b></span>`).join('') + tests;
+  $('#howLive').textContent = T('howLive');
 }
 
 /* ---------- now card ---------- */
