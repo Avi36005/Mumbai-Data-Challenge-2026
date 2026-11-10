@@ -3,79 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AirPulse Mumbai</title>
-<meta name="description" content="Tomorrow's air for every Mumbai ward: when to go out, who is exposed, and how far to trust it. Built on the Google Mumbai Data Challenge forecast.">
-<meta name="theme-color" content="#0f3d3e">
+<title>Mumbai AirPulse</title>
+<meta name="description" content="Hourly PM2.5 forecast for all 24 Mumbai wards: when to go out, who is breathing bad air, and how far to trust it.">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Noto+Sans+Devanagari:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<a class="skip" href="#plan" data-t="skip">Skip to planning</a>
-<header class="bar">
-  <div class="brand"><span class="logo" aria-hidden="true"></span><span>AirPulse <b>Mumbai</b></span></div>
-  <div class="langs" role="group" aria-label="Language">
-    <button data-lang="en" aria-pressed="true">EN</button><button data-lang="hi" lang="hi">हिंदी</button><button data-lang="mr" lang="mr">मराठी</button>
-  </div>
+<header class="top">
+  <a class="brand" href="#"><span class="brand-dot"></span>Mumbai <em>AirPulse</em></a>
+  <nav aria-label="Sections">
+    <a href="#overview" data-t="navNow">Overview</a><a href="#city" data-t="navCity">City map</a><a href="#plan" data-t="navPlan">Plan my day</a><a href="#myday" data-t="navMyday">My exposure</a><a href="#bmc" data-t="navBmc">For BMC</a><a href="#trust" data-t="navTrust">Accuracy</a>
+  </nav>
+  <div class="langs" role="group" aria-label="Language"><button data-lang="en" aria-pressed="true">EN</button><button data-lang="hi" lang="hi">हिंदी</button><button data-lang="mr" lang="mr">मराठी</button></div>
 </header>
 
 <main>
-<section class="where card" aria-labelledby="whereH">
-  <h1 id="whereH" data-t="where">Where are you?</h1>
-  <div class="where-row">
-    <label class="sr" for="ward" data-t="pickArea">Pick your area</label>
-    <select id="ward"></select>
-    <button id="locate" class="btn ghost"><span aria-hidden="true">📍</span> <span data-t="locate">Use my location</span></button>
+<section class="intro" id="overview">
+  <div>
+    <p class="kicker" data-t="kicker">Air quality forecast · 24 BMC wards · hourly PM2.5</p>
+    <h1><span data-t="h1a">Mumbai's air,</span> <span class="accent" data-t="h1b">ward by ward.</span></h1>
   </div>
-  <p class="hint" id="locMsg" aria-live="polite"></p>
+  <a class="btn ghost" href="evidence/index.html"><span data-t="evidenceShort">Model evidence</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
 </section>
 
-<section class="now card" aria-labelledby="nowH">
-  <div class="now-top">
-    <div>
-      <p class="eyebrow" id="nowArea"></p>
-      <h2 id="nowH"><span id="nowTime"></span></h2>
-    </div>
-    <div class="days" role="tablist" id="days"></div>
+<section class="controls card" aria-label="Choose area and time">
+  <div class="ctl ctl-area">
+    <label for="ward" class="ctl-label" data-t="area">Area</label>
+    <div class="row"><select id="ward"></select><button id="locate" class="btn ghost icon-btn" title="Use my location" aria-label="Use my location"><svg class="ic"><use href="#i-pin"/></svg></button></div>
+    <p class="hint" id="locMsg" aria-live="polite"></p>
   </div>
-  <div class="sky-wrap">
-    <svg id="sky" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Mumbai skyline with haze for the selected hour"></svg>
-    <div class="reading">
-      <div class="num"><span id="nowVal"></span><small>µg/m³</small></div>
-      <div class="chip" id="nowCat"></div>
-      <p id="nowLinger"></p>
-      <button class="btn ghost listen small" data-say="now"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button>
-    </div>
-  </div>
-  <div class="scrub">
-    <button id="play" class="btn round" aria-label="Play the next 48 hours"><span aria-hidden="true">▶</span></button>
-    <input id="hour" type="range" min="0" max="47" step="1" aria-label="Hour">
-    <div class="ticks" id="ticks" aria-hidden="true"></div>
-  </div>
-  <div class="ribbon" id="ribbon" aria-hidden="true"></div>
-  <div class="facts3">
-    <div class="fact"><span class="ico" aria-hidden="true">🚬</span><div><b id="cig"></b><p data-t="cigNote">Breathing this air all day is like smoking this many cigarettes (Berkeley Earth rule: 22 µg/m³ over a day ≈ 1 cigarette).</p></div></div>
-    <div class="fact"><span class="ico" aria-hidden="true">🌙</span><div><b id="worst"></b><p data-t="worstNote">Worst hour of the day here</p></div></div>
-    <div class="fact"><span class="ico" aria-hidden="true">☀️</span><div><b id="best"></b><p data-t="bestNote">Cleanest hour of the day here</p></div></div>
+  <div class="ctl"><span class="ctl-label" data-t="day">Day</span><div class="days" role="tablist" id="days"></div></div>
+  <div class="ctl ctl-hour">
+    <span class="ctl-label"><span data-t="hourL">Hour</span> <b id="hourLabel"></b></span>
+    <div class="row"><button id="play" class="btn icon-btn round" aria-label="Play through the hours"><svg class="ic"><use href="#i-play"/></svg></button><input id="hour" type="range" min="0" max="47" step="1" aria-label="Hour"></div>
   </div>
 </section>
 
-<section id="plan" class="card" aria-labelledby="planH">
-  <h2 id="planH" data-t="planH">Plan my day</h2>
-  <p class="sub" data-t="planSub">Tell us what you are doing. We find the cleanest time for it.</p>
+<section class="kpis" aria-label="Key numbers">
+  <div class="kpi kpi-main"><div class="k" id="kNowL"></div><div class="v"><span id="nowVal"></span><small>µg/m³</small></div><span class="band" id="nowCat"></span><p id="nowLinger"></p></div>
+  <div class="kpi"><div class="k" data-t="kAvg">Day average</div><div class="v" id="dayAvg"></div><p id="dayAvgCat"></p></div>
+  <div class="kpi"><div class="k" data-t="kCig">Like smoking</div><div class="v" id="cig"></div><p data-t="cigShort">cigarettes a day (Berkeley Earth: 22 µg/m³ ≈ 1)</p></div>
+  <div class="kpi"><div class="k" data-t="kBest">Cleanest hour</div><div class="v" id="best"></div><p id="bestSub"></p></div>
+  <div class="kpi"><div class="k" data-t="kWorst">Worst hour</div><div class="v" id="worst"></div><p id="worstSub"></p></div>
+</section>
+
+<section class="grid g-2-1">
+  <div class="card">
+    <div class="card-head"><div><h2 id="chartH"></h2><p class="sub" data-t="chartSub">Expected PM2.5 each hour, and the higher path if Diwali smoke lingers at night. Click the chart to pick an hour.</p></div>
+      <button class="btn ghost small listen" data-say="now"><svg class="ic"><use href="#i-speaker"/></svg> <span data-t="listen">Listen</span></button></div>
+    <svg id="chart" class="chart" role="img" aria-label="Hourly PM2.5 chart"></svg>
+    <div class="legend" id="chartLegend"></div>
+  </div>
+  <div class="card exposed">
+    <div class="card-head"><div><h2 data-t="expTitle">Who is breathing bad air</h2><p class="sub" id="expH"></p></div></div>
+    <div class="big2"><div><b id="expPeople"></b><span data-t="people">people</span></div><div><b id="expKids"></b><span data-t="students">school students</span></div></div>
+    <ol id="expList"></ol>
+    <p class="hint" id="expNote"></p>
+  </div>
+</section>
+
+<section class="grid g-2-1" id="city">
+  <div class="card map-card">
+    <div class="card-head"><div><h2 data-t="mapH">City map</h2><p class="sub" data-t="mapSub">All 24 wards at the selected hour. Click a ward to select it.</p></div></div>
+    <div id="map" role="img" aria-label="Map of Mumbai wards coloured by air quality"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="card" id="bmc">
+    <div class="card-head"><div><h2 data-t="bmcH">For BMC: tonight's priority wards</h2><p class="sub" data-t="bmcSub">Ranked by people × hours above Moderate, 20:00–06:00, if smoke lingers. For BMC's 76 ward squads.</p></div></div>
+    <ol class="rank" id="rank"></ol>
+    <button class="btn ghost small" id="bmcCsv"><svg class="ic"><use href="#i-download"/></svg> <span data-t="csv">Download list (CSV)</span></button>
+  </div>
+</section>
+
+<section class="card" id="plan">
+  <div class="card-head"><div><h2 data-t="planH">Plan my day</h2><p class="sub" data-t="planSub">Pick what you are doing. We find the cleanest time for it in your area.</p></div>
+    <button class="btn ghost small listen" data-say="plan"><svg class="ic"><use href="#i-speaker"/></svg> <span data-t="listen">Listen</span></button></div>
   <div class="acts" id="acts" role="radiogroup"></div>
   <div class="answer" id="answer" aria-live="polite"></div>
-  <button class="btn ghost listen" data-say="plan"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button>
 </section>
 
-<section id="myday" class="card" aria-labelledby="mydayH">
-  <div class="head-row"><h2 id="mydayH" data-t="mydayH">My day, less smoke</h2><button class="btn ghost listen" data-say="myday"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button></div>
-  <p class="sub" data-t="mydaySub">Tell us your routine. We count how much PM2.5 you will breathe in outdoors tomorrow, and how to cut it.</p>
+<section class="card" id="myday">
+  <div class="card-head"><div><h2 data-t="mydayH">My exposure, and how to cut it</h2><p class="sub" data-t="mydaySub">Enter your routine. We count the PM2.5 you breathe in outdoors and suggest cleaner times.</p></div>
+    <button class="btn ghost small listen" data-say="myday"><svg class="ic"><use href="#i-speaker"/></svg> <span data-t="listen">Listen</span></button></div>
   <div class="form-grid">
     <label><span data-t="fHome">I live in</span><select id="fHome"></select></label>
     <label><span data-t="fWork">I work or study in</span><select id="fWork"></select></label>
-    <label><span data-t="fGo">I leave for work at</span><select id="fGo" class="hsel"></select></label>
+    <label><span data-t="fGo">I leave at</span><select id="fGo" class="hsel"></select></label>
     <label><span data-t="fBack">I come back at</span><select id="fBack" class="hsel"></select></label>
     <label><span data-t="fEx">Exercise</span><select id="fEx"><option value="none" data-t="exNone">None</option><option value="walk" data-t="exWalk">Walk (1 hour)</option><option value="run" data-t="exRun">Run or gym outdoors (1 hour)</option></select></label>
     <label><span data-t="fExAt">Exercise at</span><select id="fExAt" class="hsel"></select></label>
@@ -84,49 +104,38 @@
   <div class="dose" id="dose" aria-live="polite"></div>
 </section>
 
-<section class="card" aria-labelledby="mapH">
-  <h2 id="mapH" data-t="mapH">The whole city, hour by hour</h2>
-  <p class="sub" data-t="mapSub">Each of Mumbai's 24 wards, coloured by expected PM2.5. Tap a ward to choose it. Move the slider above to change the hour.</p>
-  <div class="map-grid">
-    <div id="map" role="img" aria-label="Map of Mumbai wards coloured by air quality"></div>
-    <div class="exposed">
-      <h3 id="expH"></h3>
-      <div class="big2"><div><b id="expPeople"></b><span data-t="people">people</span></div><div><b id="expKids"></b><span data-t="students">school students</span></div></div>
-      <p class="hint" id="expNote"></p>
-      <ol id="expList"></ol>
-    </div>
+<section class="grid g-1-2" id="trust">
+  <div class="card share">
+    <div class="card-head"><div><h2 data-t="shareH">Share with family</h2><p class="sub" data-t="shareSub">A picture of your area's air, in your language, ready for WhatsApp.</p></div></div>
+    <canvas id="card" width="1080" height="1350" aria-label="Preview of the share picture"></canvas>
+    <div class="share-btns"><button id="shareBtn" class="btn"><svg class="ic"><use href="#i-share"/></svg> <span data-t="share">Share</span></button><button id="dlBtn" class="btn ghost"><svg class="ic"><use href="#i-download"/></svg> <span data-t="download">Download</span></button></div>
   </div>
-  <div class="legend" id="legend"></div>
-</section>
-
-<section id="bmc" class="card" aria-labelledby="bmcH">
-  <div class="head-row"><h2 id="bmcH" data-t="bmcH">For BMC: where to send the squads tonight</h2><button class="btn ghost" id="bmcCsv" data-t="csv">Download list (CSV)</button></div>
-  <p class="sub" data-t="bmcSub">BMC runs 76 ward-level anti-pollution squads. This ranks wards by how many people will breathe Moderate-or-worse air tonight (20:00 to 06:00) if festival smoke lingers.</p>
-  <ol class="rank" id="rank"></ol>
-  <p class="hint" data-t="bmcNote">Score = people in the ward × hours × µg/m³ above 60 (CPCB Moderate), using the smoky-nights forecast. A planning aid, not an official advisory.</p>
-</section>
-
-<section class="card share" aria-labelledby="shareH">
-  <div>
-    <h2 id="shareH" data-t="shareH">Send it to the family group</h2>
-    <p class="sub" data-t="shareSub">One picture with tomorrow's air for your area, in your language. Ready for WhatsApp.</p>
-    <div class="share-btns"><button id="shareBtn" class="btn"><span aria-hidden="true">📤</span> <span data-t="share">Share picture</span></button><button id="dlBtn" class="btn ghost" data-t="download">Download</button></div>
+  <div class="card">
+    <div class="card-head"><div><h2 data-t="trustH">How accurate is this?</h2><p class="sub" data-t="trustSub">How the forecast is made, and how it was tested before anyone used it.</p></div></div>
+    <div class="trust-grid" id="trustGrid"></div>
+    <a href="evidence/index.html" class="btn ghost"><span data-t="evidence">Full evidence: accuracy, Diwali patterns, weather, sensor health</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
   </div>
-  <canvas id="card" width="1080" height="1350" aria-label="Preview of the share picture"></canvas>
-</section>
-
-<section class="card trust" aria-labelledby="trustH">
-  <h2 id="trustH" data-t="trustH">Why trust this?</h2>
-  <div class="trust-grid" id="trust"></div>
-  <p class="sub"><a href="evidence/index.html" class="btn ghost" data-t="evidence">See the full evidence: model accuracy, Diwali patterns, weather, sensor health →</a></p>
 </section>
 </main>
 
-<footer class="foot">
-  <p id="sources"></p>
-  <p data-t="foot">Made by team Kryptonite for the Google Mumbai Data Challenge 2026. Forecasts are estimates, not medical advice.</p>
-</footer>
+<footer class="foot"><p id="sources"></p><p data-t="foot">Made by team Kryptonite for the Google Mumbai Data Challenge 2026. Forecasts are estimates, not medical advice.</p></footer>
 <div class="tip" id="tip" role="tooltip"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="3"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-walk" viewBox="0 0 24 24"><circle cx="13" cy="4" r="1.8"/><path d="M12.5 7.5l-2 5.5 3 3V21M10.5 13l-2.5 2.5M12.5 7.5l3 3.5h3M10 21l1.5-4.5"/></symbol>
+  <symbol id="i-run" viewBox="0 0 24 24"><circle cx="15" cy="4" r="1.8"/><path d="M8 9l4-2 3 3-2 4 3 3v4M13 14l-4 1-2 3M15 10l3 1.5h3M5 12l3-3"/></symbol>
+  <symbol id="i-kids" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l3.8 2.8-1.5 4.4h-4.6L8.2 10.3z"/></symbol>
+  <symbol id="i-train" viewBox="0 0 24 24"><rect x="5.5" y="3" width="13" height="13" rx="3"/><path d="M5.5 10h13M9 20l1.5-4M15 20l-1.5-4"/><circle cx="9" cy="13" r=".8"/><circle cx="15" cy="13" r=".8"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-work" viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V5.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5.5v2M3.5 13h17"/></symbol>
+</svg>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="i18n.js"></script>
 <script src="app.js"></script>

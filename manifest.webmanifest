@@ -1,0 +1,16 @@
+{
+  "name": "Mumbai AirPulse",
+  "short_name": "AirPulse",
+  "description": "Hourly PM2.5 forecast for all 24 Mumbai wards: when to go out, who is breathing bad air, and how far to trust it.",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "en",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

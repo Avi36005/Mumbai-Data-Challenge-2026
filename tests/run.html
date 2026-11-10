@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8"><body><pre id="out">running</pre>
+<iframe id="f" style="width:1300px;height:900px"></iframe>
+<script>
+const R = [], ok = (n, c, d = '') => R.push(`${c ? 'PASS' : 'FAIL'}  ${n}${d ? '  [' + d + ']' : ''}`);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const fire = (el, t) => el.dispatchEvent(new Event(t, { bubbles: true }));
+async function load(q) { const f = document.getElementById('f'); f.src = '../index.html' + q; await new Promise(r => f.onload = r);
+  const w = f.contentWindow; w.__errs = []; w.addEventListener('error', e => w.__errs.push(e.message)); await wait(2500); return [w, w.document]; }
+(async () => {
+  let [w, d] = await load('?lang=en&ward=ME&hour=1');
+  const $ = s => d.querySelector(s), $$ = s => [...d.querySelectorAll(s)], txt = s => ($(s) || {}).textContent || '';
+  ok('page title', d.title === 'Mumbai AirPulse');
+  ok('no emoji in page', !/[\u{1F300}-\u{1FAFF}☀-➿]/u.test(d.body.innerText));
+  ok('white background', getComputedStyle(d.body).backgroundColor === 'rgb(255, 255, 255)', getComputedStyle(d.body).backgroundColor);
+  ok('DM Sans font', getComputedStyle(d.body).fontFamily.includes('DM Sans'));
+  ok('24 wards in area list', $$('#ward option').length === 24, $$('#ward option').length);
+  ok('selected ward from link', $('#ward').value === 'ME');
+  ok('2 day tabs', $$('#days button').length === 2);
+  ok('hour label', /01:00/.test(txt('#hourLabel')), txt('#hourLabel'));
+  ok('KPI now value', /^\d+$/.test(txt('#nowVal')), txt('#nowVal'));
+  ok('KPI category', txt('#nowCat').length > 2, txt('#nowCat'));
+  ok('KPI day average', /^\d+$/.test(txt('#dayAvg')), txt('#dayAvg'));
+  ok('KPI cigarettes', /^\d+\.\d$/.test(txt('#cig')), txt('#cig'));
+  ok('KPI best/worst hours', /^\d\d:00$/.test(txt('#best')) && /^\d\d:00$/.test(txt('#worst')), txt('#best') + ' / ' + txt('#worst'));
+  ok('chart drawn (3 paths)', $$('#chart path').length === 3, $$('#chart path').length);
+  ok('chart title has ward', txt('#chartH').includes('Govandi'), txt('#chartH'));
+  ok('map: 24 ward shapes', $$('#map path.leaflet-interactive').length >= 24, $$('#map path.leaflet-interactive').length);
+  ok('map tiles loaded', $$('#map img.leaflet-tile').length > 0);
+  ok('exposure numbers', /\d/.test(txt('#expPeople')) && /\d/.test(txt('#expKids')), txt('#expPeople') + ' / ' + txt('#expKids'));
+  ok('BMC ranking: 7 wards', $$('#rank li').length === 7);
+  ok('6 activities', $$('#acts button').length === 6);
+  ok('plan answer', /Go at \d\d:00/.test(txt('#answer')), txt('#answer').slice(0, 60));
+  ok('my exposure: µg and %', /µg/.test(txt('#dose')) && /%/.test(txt('#dose')), txt('#dose').slice(0, 70));
+  ok('trust: 4 cards', $$('#trustGrid > div').length === 4);
+  const cv = $('#card'), px = cv.getContext('2d').getImageData(960, 450, 1, 1).data; ok('share card drawn', px[3] === 255 && !(px[0] === 255 && px[1] === 255 && px[2] === 255), px.join(','));
+  ok('legend filled', $$('#chartLegend span').length === 3 && $$('#legend span').length === 8);
+  // interactions
+  $('#ward').value = 'AX'; fire($('#ward'), 'change'); await wait(300); ok('change ward updates chart title', txt('#chartH').includes('Colaba'), txt('#chartH'));
+  $$('#days button')[1].click(); await wait(300); ok('day 2 selected', /12/.test(txt('#hourLabel')), txt('#hourLabel'));
+  $('#hour').value = 30; fire($('#hour'), 'input'); await wait(200); ok('slider moves hour', /06:00/.test(txt('#hourLabel')), txt('#hourLabel'));
+  $$('#acts button')[2].click(); await wait(200); ok('activity switch', $$('#acts button')[2].getAttribute('aria-checked') === 'true' && /Kids/.test(txt('#answer')));
+  $$('#acts button')[5].click(); await wait(200); ok('outdoor work summary', /averages/.test(txt('#answer')), txt('#answer').slice(0, 60));
+  $('#fEx').value = 'run'; fire($('#fEx'), 'change'); $('#fKids').value = 'none'; fire($('#fKids'), 'change'); await wait(200); ok('my exposure recalculates', /Exercise|Run/i.test(txt('#dose')) || /µg/.test(txt('#dose')), txt('#dose').slice(0, 60));
+  $('#play').click(); await wait(1100); const h1 = txt('#hourLabel'); $('#play').click(); ok('play advances hours', h1 !== 'Thu 12 Nov, 06:00', h1);
+  const wardPath = $$('#map path.leaflet-interactive')[0]; wardPath.dispatchEvent(new MouseEvent('click', { bubbles: true })); await wait(300); ok('map click selects a ward', txt('#chartH').length > 5, txt('#chartH'));
+  ok('no script errors (en)', w.__errs.length === 0, w.__errs.join(' | '));
+  for (const lg of ['hi', 'mr']) {
+    [w, d] = await load(`?lang=${lg}&ward=PN&hour=8`);
+    const t = d.querySelector('h1').innerText, a = d.querySelector('#answer').innerText;
+    ok(`${lg}: heading translated`, /[ऀ-ॿ]/.test(t), t); ok(`${lg}: plan answer translated`, /[ऀ-ॿ]/.test(a), a.slice(0, 40));
+    ok(`${lg}: no English fallbacks in KPIs`, /[ऀ-ॿ]/.test(d.querySelector('.kpis').innerText));
+    ok(`${lg}: no script errors`, w.__errs.length === 0, w.__errs.join(' | '));
+  }
+  const fails = R.filter(r => r.startsWith('FAIL')).length; document.getElementById('out').textContent = R.join('\n') + `\n\nRESULT: ${R.length - fails} passed, ${fails} failed`;
+})();
+</script>

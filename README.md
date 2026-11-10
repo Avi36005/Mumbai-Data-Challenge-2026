@@ -20,20 +20,24 @@ Air-quality apps usually show one number for one station. AirPulse turns a forec
 
 ## What it does
 
-| Feature | What you get |
-|---|---|
-| **Where are you?** | Pick your area or tap "Use my location"; the nearest ward is chosen |
-| **The sky over Mumbai** | An animated skyline whose haze follows the hourly forecast; play through the next 48 hours |
-| **Plan my day** | Choose walk, run, kids playing, commute, elderly / heart-lung, or outdoor work. It finds the cleanest hour, the hour to avoid, and plain advice |
-| **Cigarette equivalent** | The day's air as cigarettes (Berkeley Earth rule of thumb: 22 µg/m³ over 24 h ≈ 1 cigarette) |
-| **The whole city** | All 24 wards coloured hour by hour, with how many people and school students are in Moderate-or-worse air |
-| **My day, less smoke** | Enter home ward, work ward, commute times, exercise and children's outdoor time. It counts the PM2.5 you breathe in outdoors (µg, using US EPA breathing rates) and finds a cleaner plan: e.g. 250 → 200 µg (−20%) by walking at 16:00 instead of 06:00 |
-| **🔊 Listen** | Reads the forecast and advice aloud in English, Hindi or Marathi (the device's built-in Google / system voices), for elderly users and anyone who prefers listening |
-| **For BMC: where to send the squads tonight** | Ranks the 24 wards by people × hours × µg/m³ above the CPCB Moderate line for tonight, with peak hour and schools; downloadable as CSV for the 76 ward-level squads |
-| **Share** | A ready-made picture for WhatsApp in your language |
-| **Why trust this?** | How the forecast was made and tested, linking to the full evidence dashboard (`/evidence`) |
+A white, single-page dashboard (DM Sans; Noto Sans Devanagari for Hindi and Marathi). Pick an area, a day and an hour at the top; every panel updates.
 
-Links can preselect language and ward: `?lang=hi&ward=ME`.
+| Panel | What you get |
+|---|---|
+| **Controls** | Area (24 BMC wards, or "use my location"), day, hour slider with play-through |
+| **Key numbers** | PM2.5 at the chosen hour with its CPCB category and the smoky-nights value, day average, cigarette equivalent (Berkeley Earth: 22 µg/m³ over 24 h ≈ 1 cigarette), cleanest hour, worst hour |
+| **Hour by hour** | Chart of the expected PM2.5 and the higher path if Diwali smoke lingers, on the CPCB colour bands; click to pick an hour; read aloud with **Listen** |
+| **Who is breathing bad air** | People and school students in wards at Moderate or worse at that hour, the worst wards, and the worst moment of the period |
+| **City map** | All 24 wards coloured hour by hour; forecast and estimated stations; click a ward to select it |
+| **For BMC: tonight's priority wards** | Wards ranked by people × hours × µg/m³ above Moderate (20:00–06:00), with peak and schools; CSV download for BMC's 76 ward squads |
+| **Plan my day** | Walk, run, kids playing, commute, elderly / heart-lung, outdoor work: the cleanest hour, the hour to avoid, plain advice |
+| **My exposure, and how to cut it** | Home ward, work ward, commute times, exercise and children's outdoor time → PM2.5 breathed in outdoors (µg, US EPA breathing rates) and a cleaner plan, e.g. 250 → 200 µg (−20%) |
+| **Share with family** | A picture of your area's air in your language, for WhatsApp |
+| **How accurate is this?** | How the model was built and tested, linking to the full evidence dashboard (`/evidence`) |
+
+**Installable app:** on a phone, open the link and choose *Add to Home screen*. It installs as **AirPulse** with its own icon, opens full-screen, and keeps working offline from the last forecast (web app manifest + service worker).
+
+Links can preselect language, ward and hour: `?lang=mr&ward=ME&hour=1`.
 
 ## Google tools used, and how
 
@@ -62,6 +66,15 @@ firebase deploy --only hosting --project airpulse-mumbai-2026
    - two years later (1–16 Oct 2026, 11 stations): 16.3 vs 16.9.
 3. **Wards.** Each ward takes the distance-weighted average of all 26 stations at its centre.
 4. **People.** Ward population from BMC prabhag data; school enrolment from UDISE+ 2024-25.
+
+## Tests
+
+`tests/run.html` opens the app and clicks through every control in English, Hindi and Marathi. It checks 42 things: the KPIs, the chart, all 24 ward shapes on the map, the exposure counts, the BMC ranking, all six activities, the exposure planner, the share picture, the language switch, the white theme, no emoji, and no script errors.
+
+```bash
+python3 -m http.server 8766          # from the repo root
+# open http://localhost:8766/tests/run.html   ->   RESULT: 42 passed, 0 failed
+```
 
 ## Data (all from the challenge package or the ClimateVerse catalogue)
 

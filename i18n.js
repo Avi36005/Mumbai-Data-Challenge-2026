@@ -43,6 +43,17 @@ en: {
   sources: 'Data: Zindi challenge package (Train, AdditionalHistory); NOAA GFS; BMC ward boundaries and population; UDISE+ 2024-25 schools (all via ClimateVerse).',
   days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
   cardTitle: 'Air in {w}', cardBest: 'Best time to go out', cardAvoid: 'Avoid', cardCig: '≈ {n} cigarettes', cardFoot: 'AirPulse Mumbai · forecast for {d}'
+  ,navNow: 'Overview', navCity: 'City map', navPlan: 'Plan my day', navMyday: 'My exposure', navBmc: 'For BMC', navTrust: 'Accuracy',
+  kicker: 'Air quality forecast · 24 BMC wards · hourly PM2.5', h1a: "Mumbai's air,", h1b: 'ward by ward.', evidenceShort: 'Model evidence',
+  area: 'Area', day: 'Day', hourL: 'Hour', kNow: 'PM2.5 at {t}', kAvg: 'Day average', kCig: 'Like smoking', cigShort: 'cigarettes a day (Berkeley Earth: 22 µg/m³ ≈ 1)', kBest: 'Cleanest hour', kWorst: 'Worst hour',
+  chartH: 'Hour by hour in {w}', chartSub: 'Expected PM2.5 each hour, and the higher path if Diwali smoke lingers at night. Click the chart to pick an hour.',
+  expTitle: 'Who is breathing bad air', expected: 'Expected', lingerShort: 'If smoke lingers', range: 'Range between the two', stF: 'Forecast station', stE: 'Estimated station',
+  mapH: 'City map', mapSub: 'All 24 wards at the selected hour. Click a ward to select it.',
+  bmcH: "For BMC: tonight's priority wards", bmcSub: "Ranked by people × hours above Moderate, 20:00–06:00, if smoke lingers. For BMC's 76 ward squads.",
+  planSub: 'Pick what you are doing. We find the cleanest time for it in your area.', mydayH: 'My exposure, and how to cut it', mydaySub: 'Enter your routine. We count the PM2.5 you breathe in outdoors and suggest cleaner times.', fGo: 'I leave at',
+  shareH: 'Share with family', shareSub: "A picture of your area's air, in your language, ready for WhatsApp.", share: 'Share',
+  trustH: 'How accurate is this?', trustSub: 'How the forecast is made, and how it was tested before anyone used it.', evidence: 'Full evidence: accuracy, Diwali patterns, weather, sensor health',
+  cardAvg: 'day average, µg/m³', cardCig: 'Like smoking {n} cigarettes', cardCigNote: 'Berkeley Earth: 22 µg/m³ over a day ≈ 1 cigarette'
 },
 hi: {
   mydayH: 'मेरा दिन, कम धुआँ', mydaySub: 'अपनी दिनचर्या बताइए। हम गिनेंगे कि कल बाहर आप कितना PM2.5 साँस में लेंगे, और उसे कैसे घटाएँ।', listen: 'सुनें',
@@ -87,6 +98,17 @@ hi: {
   sources: 'डेटा: Zindi चैलेंज पैकेज; NOAA GFS; BMC वार्ड सीमाएँ और आबादी; UDISE+ 2024-25 स्कूल (सभी ClimateVerse से)।',
   days: ['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'], months: ['जन','फ़र','मार्च','अप्रै','मई','जून','जुला','अग','सित','अक्टू','नव','दिस'],
   cardTitle: '{w} की हवा', cardBest: 'बाहर जाने का सबसे अच्छा समय', cardAvoid: 'इस समय से बचें', cardCig: '≈ {n} सिगरेट', cardFoot: 'AirPulse Mumbai · {d} का पूर्वानुमान'
+  ,navNow: 'सारांश', navCity: 'शहर का नक्शा', navPlan: 'दिन की योजना', navMyday: 'मेरा एक्सपोज़र', navBmc: 'BMC के लिए', navTrust: 'सटीकता',
+  kicker: 'वायु गुणवत्ता पूर्वानुमान · 24 BMC वार्ड · हर घंटे PM2.5', h1a: 'मुंबई की हवा,', h1b: 'हर वार्ड की।', evidenceShort: 'मॉडल का सबूत',
+  area: 'इलाका', day: 'दिन', hourL: 'घंटा', kNow: '{t} पर PM2.5', kAvg: 'दिन का औसत', kCig: 'इतनी सिगरेट जैसा', cigShort: 'सिगरेट प्रतिदिन (बर्कले अर्थ: 22 µg/m³ ≈ 1)', kBest: 'सबसे साफ़ घंटा', kWorst: 'सबसे खराब घंटा',
+  chartH: '{w} में हर घंटे', chartSub: 'हर घंटे अनुमानित PM2.5, और रात में दिवाली का धुआँ रुके तो ऊँचा रास्ता। घंटा चुनने के लिए चार्ट पर क्लिक करें।',
+  expTitle: 'कौन खराब हवा में साँस ले रहा है', expected: 'अनुमानित', lingerShort: 'धुआँ रुके तो', range: 'दोनों के बीच का दायरा', stF: 'पूर्वानुमान स्टेशन', stE: 'अनुमानित स्टेशन',
+  mapH: 'शहर का नक्शा', mapSub: 'चुने गए घंटे पर सभी 24 वार्ड। वार्ड चुनने के लिए उस पर क्लिक करें।',
+  bmcH: 'BMC के लिए: आज रात के प्राथमिक वार्ड', bmcSub: 'लोग × मध्यम से ऊपर के घंटे, 20:00–06:00, धुआँ रुके तो। BMC के 76 वार्ड दस्तों के लिए।',
+  planSub: 'बताइए आप क्या कर रहे हैं। हम आपके इलाके में उसका सबसे साफ़ समय बताएँगे।', mydayH: 'मेरा एक्सपोज़र, और उसे कैसे घटाएँ', mydaySub: 'अपनी दिनचर्या डालें। हम गिनेंगे कि आप बाहर कितना PM2.5 साँस में लेते हैं और साफ़ समय सुझाएँगे।', fGo: 'मैं निकलता/निकलती हूँ',
+  shareH: 'परिवार के साथ साझा करें', shareSub: 'आपके इलाके की हवा की तस्वीर, आपकी भाषा में, WhatsApp के लिए तैयार।', share: 'साझा करें',
+  trustH: 'यह कितना सटीक है?', trustSub: 'पूर्वानुमान कैसे बना, और इस्तेमाल से पहले कैसे जाँचा गया।', evidence: 'पूरा सबूत: सटीकता, दिवाली के पैटर्न, मौसम, सेंसर की हालत',
+  cardAvg: 'दिन का औसत, µg/m³', cardCig: '{n} सिगरेट पीने जैसा', cardCigNote: 'बर्कले अर्थ: दिन भर 22 µg/m³ ≈ 1 सिगरेट'
 },
 mr: {
   mydayH: 'माझा दिवस, कमी धूर', mydaySub: 'तुमची दिनचर्या सांगा. उद्या बाहेर तुम्ही किती PM2.5 श्वासात घ्याल आणि ते कसे कमी करायचे, ते आम्ही मोजू.', listen: 'ऐका',
@@ -131,5 +153,16 @@ mr: {
   sources: 'डेटा: Zindi चॅलेंज पॅकेज; NOAA GFS; BMC वॉर्ड सीमा आणि लोकसंख्या; UDISE+ 2024-25 शाळा (सर्व ClimateVerse मधून).',
   days: ['रवि','सोम','मंगळ','बुध','गुरु','शुक्र','शनि'], months: ['जाने','फेब्रु','मार्च','एप्रि','मे','जून','जुलै','ऑग','सप्टें','ऑक्टो','नोव्हें','डिसें'],
   cardTitle: '{w} मधील हवा', cardBest: 'बाहेर जाण्याची सर्वोत्तम वेळ', cardAvoid: 'ही वेळ टाळा', cardCig: '≈ {n} सिगारेट', cardFoot: 'AirPulse Mumbai · {d} चा अंदाज'
+  ,navNow: 'आढावा', navCity: 'शहराचा नकाशा', navPlan: 'दिवसाचे नियोजन', navMyday: 'माझे एक्सपोजर', navBmc: 'BMC साठी', navTrust: 'अचूकता',
+  kicker: 'हवा गुणवत्ता अंदाज · 24 BMC वॉर्ड · तासागणिक PM2.5', h1a: 'मुंबईची हवा,', h1b: 'प्रत्येक वॉर्डची.', evidenceShort: 'मॉडेलचा पुरावा',
+  area: 'भाग', day: 'दिवस', hourL: 'तास', kNow: '{t} वाजता PM2.5', kAvg: 'दिवसाची सरासरी', kCig: 'इतक्या सिगारेटसारखे', cigShort: 'सिगारेट दररोज (बर्कले अर्थ: 22 µg/m³ ≈ 1)', kBest: 'सर्वात स्वच्छ तास', kWorst: 'सर्वात वाईट तास',
+  chartH: '{w} मध्ये तासागणिक', chartSub: 'प्रत्येक तासाचा अपेक्षित PM2.5, आणि रात्री दिवाळीचा धूर टिकल्यास जास्त मार्ग. तास निवडण्यासाठी चार्टवर क्लिक करा.',
+  expTitle: 'कोण वाईट हवा श्वासात घेत आहे', expected: 'अपेक्षित', lingerShort: 'धूर टिकल्यास', range: 'दोघांमधील श्रेणी', stF: 'अंदाज स्टेशन', stE: 'अंदाजित स्टेशन',
+  mapH: 'शहराचा नकाशा', mapSub: 'निवडलेल्या तासाला सर्व 24 वॉर्ड. वॉर्ड निवडण्यासाठी त्यावर क्लिक करा.',
+  bmcH: 'BMC साठी: आज रात्रीचे प्राधान्य वॉर्ड', bmcSub: 'लोक × मध्यमपेक्षा जास्त तास, 20:00–06:00, धूर टिकल्यास. BMC च्या 76 वॉर्ड पथकांसाठी.',
+  planSub: 'तुम्ही काय करत आहात ते निवडा. तुमच्या भागात त्यासाठी सर्वात स्वच्छ वेळ आम्ही सांगू.', mydayH: 'माझे एक्सपोजर, आणि ते कसे कमी करायचे', mydaySub: 'तुमची दिनचर्या भरा. तुम्ही बाहेर किती PM2.5 श्वासात घेता ते मोजून स्वच्छ वेळा सुचवू.', fGo: 'मी निघतो/निघते',
+  shareH: 'कुटुंबासोबत शेअर करा', shareSub: 'तुमच्या भागाच्या हवेचे चित्र, तुमच्या भाषेत, WhatsApp साठी तयार.', share: 'शेअर करा',
+  trustH: 'हे किती अचूक आहे?', trustSub: 'अंदाज कसा बनवला, आणि वापरण्यापूर्वी कसा तपासला.', evidence: 'संपूर्ण पुरावा: अचूकता, दिवाळीचे नमुने, हवामान, सेन्सरची स्थिती',
+  cardAvg: 'दिवसाची सरासरी, µg/m³', cardCig: '{n} सिगारेट ओढण्यासारखे', cardCigNote: 'बर्कले अर्थ: दिवसभर 22 µg/m³ ≈ 1 सिगारेट'
 }
 };

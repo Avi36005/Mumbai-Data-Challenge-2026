@@ -1,7 +1,23 @@
 {
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "**/.*", "scripts/**", "README.md"],
-    "headers": [{ "source": "**/data/**", "headers": [{ "key": "Cache-Control", "value": "max-age=300" }] }]
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "scripts/**",
+      "README.md",
+      "tests/**"
+    ],
+    "headers": [
+      {
+        "source": "**/data/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=300"
+          }
+        ]
+      }
+    ]
   }
 }
