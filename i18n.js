@@ -59,7 +59,7 @@ en: {
     ['Cloud job', ['GitHub Actions at 11:15 and 23:30 IST', 'Downloads the newest GFS run', 'No laptop, no person']],
     ['Forecast engines', ['Competition model: LightGBM + GFS (11–12 Nov)', 'Daily weather engine: LightGBM on GFS (every later day)']],
     ['City model', ['4 stations → 26 stations (16% less error, tested)', '26 stations → 24 wards', 'People and schools exposed']],
-    ['Quality gate', ['47 browser checks', 'English, Hindi and Marathi', 'Nothing is published if one fails']],
+    ['Quality gate', ['51 browser checks', 'English, Hindi and Marathi', 'Nothing is published if one fails']],
     ['To your phone', ['Firebase Hosting on Google Cloud {G}', 'Google Fonts, incl. Devanagari {G}', 'Google voices for Listen {G}', 'Installable app, works offline']]]
 },
 hi: {
@@ -121,7 +121,7 @@ hi: {
     ['क्लाउड जॉब', ['GitHub Actions, 11:15 और 23:30 IST', 'नया GFS रन डाउनलोड करता है', 'न लैपटॉप, न कोई व्यक्ति']],
     ['पूर्वानुमान इंजन', ['प्रतियोगिता मॉडल: LightGBM + GFS (11–12 नव)', 'रोज़ का मौसम-इंजन: GFS पर LightGBM (बाद के हर दिन)']],
     ['शहर मॉडल', ['4 स्टेशन → 26 स्टेशन (16% कम गलती, जाँचा हुआ)', '26 स्टेशन → 24 वार्ड', 'प्रभावित लोग और स्कूल']],
-    ['गुणवत्ता जाँच', ['47 ब्राउज़र जाँचें', 'अंग्रेज़ी, हिंदी और मराठी', 'एक भी फेल हो तो कुछ प्रकाशित नहीं']],
+    ['गुणवत्ता जाँच', ['51 ब्राउज़र जाँचें', 'अंग्रेज़ी, हिंदी और मराठी', 'एक भी फेल हो तो कुछ प्रकाशित नहीं']],
     ['आपके फ़ोन तक', ['Google Cloud पर Firebase Hosting {G}', 'Google Fonts, देवनागरी सहित {G}', 'सुनने के लिए Google आवाज़ें {G}', 'इंस्टॉल होने वाला ऐप, ऑफ़लाइन भी']]]
 },
 mr: {
@@ -183,7 +183,7 @@ mr: {
     ['क्लाउड जॉब', ['GitHub Actions, 11:15 आणि 23:30 IST', 'नवीन GFS रन डाउनलोड करतो', 'लॅपटॉप नाही, माणूस नाही']],
     ['अंदाज इंजिन', ['स्पर्धा मॉडेल: LightGBM + GFS (11–12 नोव्हें)', 'रोजचे हवामान-इंजिन: GFS वर LightGBM (पुढील प्रत्येक दिवस)']],
     ['शहर मॉडेल', ['4 स्टेशने → 26 स्टेशने (16% कमी चूक, तपासलेले)', '26 स्टेशने → 24 वॉर्ड', 'प्रभावित लोक आणि शाळा']],
-    ['गुणवत्ता तपासणी', ['47 ब्राउझर तपासण्या', 'इंग्रजी, हिंदी आणि मराठी', 'एक जरी अपयशी झाली तर काहीही प्रकाशित नाही']],
+    ['गुणवत्ता तपासणी', ['51 ब्राउझर तपासण्या', 'इंग्रजी, हिंदी आणि मराठी', 'एक जरी अपयशी झाली तर काहीही प्रकाशित नाही']],
     ['तुमच्या फोनपर्यंत', ['Google Cloud वर Firebase Hosting {G}', 'Google Fonts, देवनागरीसह {G}', 'ऐकण्यासाठी Google आवाज {G}', 'इन्स्टॉल होणारे ॲप, ऑफलाइनही']]]
 }
 };
