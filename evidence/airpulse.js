@@ -50,10 +50,13 @@ function summary() {
   const all = ids.flatMap(id => H[id].map(r => ({ id, t: IST(r[0]), b: r[1], hi: r[3] }))), byT = d3.rollups(all, v => ({ b: d3.mean(v, r => r.b), hi: d3.mean(v, r => r.hi) }), r => +r.t).map(([t, v]) => ({ t: new Date(t), ...v })).sort((a, b) => a.t - b.t);
   const worst = byT.reduce((a, r) => r.hi > a.hi ? r : a), best = byT.filter(r => r.t.getHours() >= 6).reduce((a, r) => r.b < a.b ? r : a);
   const mean = id => d3.mean(H[id], r => r[1]), rank = ids.slice().sort((a, b) => mean(b) - mean(a));
-  el.innerHTML = [['🌙', 'Worst hour', `${d3.timeFormat('%a %d, %H:00')(worst.t)}`, `about ${fmt(worst.hi)} µg/m³ across the four stations if festival smoke lingers (${band(worst.hi)[1]})`],
-    ['☀️', 'Cleanest hour', `${d3.timeFormat('%a %d, %H:00')(best.t)}`, `about ${fmt(best.b)} µg/m³ (${band(best.b)[1]}): mid-afternoon, when the GFS forecast has the most air mixing (ventilation)`],
-    ['📍', 'Most polluted station', ST[rank[0]].short, `${fmt(mean(rank[0]))} µg/m³ on average; cleanest is ${ST[rank[rank.length - 1]].short} at ${fmt(mean(rank[rank.length - 1]))}`],
-    ['🌧️', 'Rain to clear it', 'None forecast', '0 mm over both days and weak wind, so smoke can linger at night']]
+  const S_ = p => `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  const IC = { moon: S_('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'), sun: S_('<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>'),
+    pin: S_('<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'), rain: S_('<path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A5.5 5.5 0 0 1 18.5 8 3.5 3.5 0 0 1 18 15z"/><path d="M8 18.5l-1 2M12 18.5l-1 2M16 18.5l-1 2"/>') };
+  el.innerHTML = [[IC.moon, 'Worst hour', `${d3.timeFormat('%a %d, %H:00')(worst.t)}`, `about ${fmt(worst.hi)} µg/m³ across the four stations if festival smoke lingers (${band(worst.hi)[1]})`],
+    [IC.sun, 'Cleanest hour', `${d3.timeFormat('%a %d, %H:00')(best.t)}`, `about ${fmt(best.b)} µg/m³ (${band(best.b)[1]}): mid-afternoon, when the GFS forecast has the most air mixing (ventilation)`],
+    [IC.pin, 'Most polluted station', ST[rank[0]].short, `${fmt(mean(rank[0]))} µg/m³ on average; cleanest is ${ST[rank[rank.length - 1]].short} at ${fmt(mean(rank[rank.length - 1]))}`],
+    [IC.rain, 'Rain to clear it', 'None forecast', '0 mm over both days and weak wind, so smoke can linger at night']]
     .map(([ic, k, v, p], i) => `<div class="sum reveal" style="--d:${.06 * i}s"><span class="ic">${ic}</span><div><div class="k">${k}</div><div class="v">${v}</div><p>${p}</p></div></div>`).join(''); watch();
 }
 function heroMeta() {

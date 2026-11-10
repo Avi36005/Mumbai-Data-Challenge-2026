@@ -47,7 +47,20 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
   $$('#days button').find(b => /12 Nov/.test(b.textContent)).click(); await wait(300); ok('12 Nov selected', /12 Nov/.test(txt('#hourLabel')), txt('#hourLabel'));
   ok('12 Nov is the competition forecast', /competition/.test(txt('#srcTag')), txt('#srcTag'));
   $('#hour').value = 30; fire($('#hour'), 'input'); await wait(200); ok('slider moves hour', /06:00/.test(txt('#hourLabel')), txt('#hourLabel'));
-  $$('#days button')[$$('#days button').length - 1].click(); await wait(200);
+  $$('#days button')[$$('#days button').length - 1].click(); await wait(800);
+  { const s = $('#days'), st = [...s.children].map(b => b.offsetLeft - 3), sb = s.querySelector('[aria-selected="true"]');
+    ok('day strip: no cut-off chip on the left', st.some(v => Math.abs(v - s.scrollLeft) <= 1), Math.round(s.scrollLeft) + ' vs ' + st.join(','));
+    ok('day strip: selected day fully visible', sb.offsetLeft >= s.scrollLeft && sb.offsetLeft + sb.offsetWidth <= s.scrollLeft + s.clientWidth + 1);
+    const x0 = s.scrollLeft; $('#dPrev').click(); await wait(800); ok('day strip: arrow scrolls to earlier days', s.scrollLeft < x0 && st.some(v => Math.abs(v - s.scrollLeft) <= 1), Math.round(x0) + ' -> ' + Math.round(s.scrollLeft)); }
+  $('#ward').value = 'HW'; fire($('#ward'), 'change'); await wait(250); ok('My exposure home follows the area', $('#fHome').value === 'HW', $('#fHome').value);
+  $('#fHome').value = 'KW'; fire($('#fHome'), 'change'); await wait(250); ok('changing home also changes the area', $('#ward').value === 'KW' && /Andheri West/.test(txt('#chartH')), $('#ward').value + ' | ' + txt('#chartH'));
+  ok('pipeline: no placeholder text', !/\{[A-Z]\}/.test(txt('#pipe')));
+  d.getElementById('plan').scrollIntoView({ behavior: 'instant' }); w.dispatchEvent(new Event('scroll')); await wait(700);   // headless Chrome does not fire scroll events under virtual time
+  { const cb = $('#overview').getBoundingClientRect(), hb = $('#plan h2').getBoundingClientRect();
+    ok('sticky bar compact when scrolled', $('#overview').classList.contains('stuck') && cb.height < 115, Math.round(cb.height) + 'px, stuck=' + $('#overview').classList.contains('stuck') + ', sentinel=' + Math.round(d.getElementById('ctlSentinel').getBoundingClientRect().top) + ', y=' + Math.round(w.scrollY));
+    ok('section heading not hidden under the bar', hb.top >= cb.bottom, Math.round(hb.top) + ' vs ' + Math.round(cb.bottom)); }
+  ok('trust: last card fills the row', $$('#trustGrid > div').pop().getBoundingClientRect().width > $$('#trustGrid > div')[0].getBoundingClientRect().width * 1.5);
+  w.scrollTo(0, 0); await wait(300);
   $$('#acts button')[2].click(); await wait(200); ok('activity switch', $$('#acts button')[2].getAttribute('aria-checked') === 'true' && /Kids/.test(txt('#answer')));
   $$('#acts button')[5].click(); await wait(200); ok('outdoor work summary', /averages/.test(txt('#answer')), txt('#answer').slice(0, 60));
   $('#fEx').value = 'run'; fire($('#fEx'), 'change'); $('#fKids').value = 'none'; fire($('#fKids'), 'change'); await wait(200); ok('my exposure recalculates', /Exercise|Run/i.test(txt('#dose')) || /µg/.test(txt('#dose')), txt('#dose').slice(0, 60));
@@ -61,6 +74,17 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
     ok(`${lg}: no English fallbacks in KPIs`, /[ऀ-ॿ]/.test(d.querySelector('.kpis').innerText));
     ok(`${lg}: no script errors`, w.__errs.length === 0, w.__errs.join(' | '));
   }
+  { const f = document.getElementById('f'); f.style.width = '390px'; [w, d] = await load('?lang=mr&ward=SX');
+    const iw = w.innerWidth, wide = [...d.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().width > iw + 1).map(e => e.tagName + '.' + (e.className.baseVal ?? e.className));
+    ok('phone 390px: nothing wider than the screen', wide.length === 0 && d.documentElement.scrollWidth <= iw, wide.slice(0, 4).join(' ') + ' doc=' + d.documentElement.scrollWidth + '/' + iw);
+    ok('phone: chart shows one readable day', d.querySelectorAll('#chart text.day').length === 1, d.querySelectorAll('#chart text.day').length);
+    ok('phone: pipeline cards sit flat', [...d.querySelectorAll('#pipe .stage')].every(s => getComputedStyle(s).transform === 'none'));
+    ok('phone: no script errors', w.__errs.length === 0, w.__errs.join(' | ')); f.style.width = '1300px'; }
+  { const f = document.getElementById('f'); f.src = '../evidence/index.html'; await new Promise(r => f.onload = r); const ew = f.contentWindow; ew.__errs = []; ew.addEventListener('error', e => ew.__errs.push(e.message)); await wait(3000);
+    const ed = ew.document; ok('evidence: page renders', ed.querySelectorAll('svg').length > 5 && /honestly forecast/.test(ed.body.innerText));
+    ok('evidence: no emoji', !/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(ed.body.innerText));
+    ok('evidence: link back to the app', !!ed.querySelector('a.back-app[href="../"]'));
+    ok('evidence: no script errors', ew.__errs.length === 0, ew.__errs.join(' | ')); }
   const fails = R.filter(r => r.startsWith('FAIL')).length; document.getElementById('out').textContent = R.join('\n') + `\n\nRESULT: ${R.length - fails} passed, ${fails} failed`;
 })();
 </script>

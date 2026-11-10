@@ -34,6 +34,7 @@
     <div class="chips" id="heroChips"></div>
   </div>
   <div class="hero-card" id="heroCard" aria-live="polite"></div>
+  <div id="ctlSentinel" aria-hidden="true"></div>
 </section>
 
 <section class="controls card" id="overview" aria-label="Choose area and time">
@@ -42,7 +43,9 @@
     <div class="row"><select id="ward"></select><button id="locate" class="btn ghost icon-btn" title="Use my location" aria-label="Use my location"><svg class="ic"><use href="#i-pin"/></svg></button></div>
     <p class="hint" id="locMsg" aria-live="polite"></p>
   </div>
-  <div class="ctl"><span class="ctl-label" data-t="day">Day</span><div class="days" role="tablist" id="days"></div><p class="hint src" id="srcTag"></p></div>
+  <div class="ctl ctl-day"><span class="ctl-label" data-t="day">Day</span>
+    <div class="days-wrap"><button class="dscroll" id="dPrev" aria-label="Earlier days"><svg class="ic"><use href="#i-arrow"/></svg></button><div class="days" role="tablist" id="days"></div><button class="dscroll" id="dNext" aria-label="Later days"><svg class="ic"><use href="#i-arrow"/></svg></button></div>
+    <p class="hint src" id="srcTag"></p></div>
   <div class="ctl ctl-hour">
     <span class="ctl-label"><span data-t="hourL">Hour</span> <b id="hourLabel"></b></span>
     <div class="row"><button id="play" class="btn icon-btn round" aria-label="Play through the hours"><svg class="ic"><use href="#i-play"/></svg></button><input id="hour" type="range" min="0" max="47" step="1" aria-label="Hour"></div>
@@ -79,7 +82,7 @@
     <div class="legend" id="legend"></div>
   </div>
   <div class="card" id="bmc">
-    <div class="card-head"><div><h2 data-t="bmcH">For BMC: tonight's priority wards</h2><p class="sub" data-t="bmcSub">Ranked by people × hours above Moderate, 20:00–06:00, if smoke lingers. For BMC's 76 ward squads.</p></div></div>
+    <div class="card-head"><div><h2 data-t="bmcH">For BMC: tonight's priority wards</h2><p class="sub" data-t="bmcSub">Ranked by people × how far and how long the air goes above 60 µg/m³ (Moderate or worse), 20:00–06:00, if smoke lingers. For BMC's 76 ward squads.</p></div></div>
     <ol class="rank" id="rank"></ol>
     <button class="btn ghost small" id="bmcCsv"><svg class="ic"><use href="#i-download"/></svg> <span data-t="csv">Download list (CSV)</span></button>
   </div>
@@ -122,7 +125,7 @@
   <div class="card">
     <div class="card-head"><div><h2 data-t="trustH">How accurate is this?</h2><p class="sub" data-t="trustSub">How the forecast is made, and how it was tested before anyone used it.</p></div></div>
     <div class="trust-grid" id="trustGrid"></div>
-    <a href="evidence/index.html" class="btn ghost"><span data-t="evidence">Full evidence: accuracy, Diwali patterns, weather, sensor health</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
+    <a href="evidence/index.html" class="btn ghost wrap"><span data-t="evidence">Full evidence: accuracy, Diwali patterns, weather, sensor health</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
   </div>
 </section>
 </main>

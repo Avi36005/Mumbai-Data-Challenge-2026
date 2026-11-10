@@ -46,19 +46,23 @@ function init() {
   S.nowIdx = idx >= 0 ? idx : null;
   S.hour = qh != null && +qh >= 0 && +qh < D.hours.length ? +qh : idx >= 0 ? idx : td >= 0 ? td + 8 : D.hours.length > 48 ? D.hours.length - 48 + 8 : 8; S.day = Math.floor(S.hour / 24);
   $('#ward').innerHTML = D.wards.slice().sort((a, b) => a.area.localeCompare(b.area)).map(w => `<option value="${w.id}">${w.area} (${w.ward})</option>`).join('');
-  $('#ward').onchange = e => { S.ward = e.target.value; save(); renderAll(); };
+  $('#ward').onchange = e => setWard(e.target.value);
+  MD.home = S.ward;   // one "my area": the area picker and "I live in" always agree
+  $('#dPrev').onclick = () => daysBy(-1); $('#dNext').onclick = () => daysBy(1); $('#days').addEventListener('scroll', dayArrows, { passive: true });
+  const stick = () => $('#overview').classList.toggle('stuck', $('#ctlSentinel').getBoundingClientRect().top < 44); addEventListener('scroll', stick, { passive: true }); stick();
   $('#locate').onclick = locate;
   $('#hour').oninput = e => { S.hour = +e.target.value; S.day = Math.floor(S.hour / 24); renderHour(); };
   $('#play').onclick = play;
   $$('.langs button').forEach(b => b.onclick = () => { lang = b.dataset.lang; save(); applyLang(); renderAll(); });
   $('#shareBtn').onclick = () => shareCard(false); $('#dlBtn').onclick = () => shareCard(true);
-  buildMap(); initMyDay(); applyLang(); renderAll(); let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawChart, 150); });
+  buildMap(); initMyDay(); applyLang(); renderAll(); let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { drawChart(); revealDay(false); }, 150); });
   $$('.listen').forEach(b => b.onclick = () => speak(b.dataset.say, b)); $('#bmcCsv').onclick = rankCsv;
 }
 function applyLang() {
   document.documentElement.lang = lang; $$('.langs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
   $$('[data-t]').forEach(el => el.textContent = T(el.dataset.t)); $('#sources').textContent = T('sources'); if (D) buildLegend();
 }
+function setWard(id) { S.ward = id; MD.home = id; save(); saveMD(); renderAll(); }
 function renderAll() { renderHero(); renderPipe(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
 
 /* ---------- hero: right now in Mumbai ---------- */
@@ -76,7 +80,8 @@ function renderHero() {
 
 /* ---------- how it works: pipeline + live status ---------- */
 function renderPipe() {
-  const G = `<span class="g-tool">Google</span>`, fill = t => t.replace('{G}', G);
+  const G = `<span class="g-tool">Google</span>`, nT = STATUS && STATUS.tests ? STATUS.tests.passed + STATUS.tests.failed : null;   // live count from the last cloud run
+  const fill = t => t.replace('{G}', G).replace('{N} ', nT ? nT + ' ' : '');
   if ($('#pipe').dataset.lang === lang && !STATUS_CHANGED) { paintStatus(); return; } $('#pipe').dataset.lang = lang; STATUS_CHANGED = false;
   $('#pipe').innerHTML = T('pipe').map(([h, items], i) => `<div class="stage" style="--i:${i}"><span class="no">${String(i + 1).padStart(2, '0')}</span><h3>${h}</h3><ul>${items.map(x => `<li><i></i><span>${fill(x)}</span></li>`).join('')}</ul><span class="dot"></span></div>`).join('');
   paintStatus();
@@ -92,9 +97,29 @@ function paintStatus() {
 /* ---------- now card ---------- */
 function renderDays() {
   $('#days').innerHTML = [...Array(NDAYS())].map((_, d) => `<button role="tab" aria-selected="${S.day === d}" data-d="${d}"><span>${dayTab(d)}</span><small>${T(dayKind(d))}</small></button>`).join('');
-  const sel = $('#days').querySelector('[aria-selected="true"]'), strip = $('#days'); if (sel) strip.scrollLeft = sel.offsetLeft - strip.clientWidth / 2 + sel.clientWidth / 2;
   $$('#days button').forEach(b => b.onclick = () => { const d = +b.dataset.d; S.hour = d * 24 + (S.hour % 24); S.day = d; renderHour(); });
+  $('#dPrev').setAttribute('aria-label', T('dPrev')); $('#dNext').setAttribute('aria-label', T('dNext')); revealDay(false);
 }
+// Day strip: scroll so the selected day is fully visible and the strip starts on a whole chip (never a cut-off chip on the left).
+const chipStarts = () => $$('#days button').map(b => b.offsetLeft - 3);
+function padDays() {   // a spacer after the last day, so the strip can also stop on a whole chip at its far end
+  const s = $('#days'), bs = $$('#days button'); let sp = s.querySelector('.dpad'); if (!bs.length) return;
+  if (!sp) { sp = document.createElement('i'); sp.className = 'dpad'; sp.setAttribute('aria-hidden', 'true'); s.appendChild(sp); } sp.style.width = '0px';
+  const last = bs[bs.length - 1], end = last.offsetLeft + last.offsetWidth, vw = s.clientWidth; if (end + 3 <= vw) return;
+  const v = chipStarts().find(v => end + 3 - v <= vw); sp.style.width = Math.max(0, v + vw - end - 3) + 'px';
+}
+function revealDay() {
+  const s = $('#days'), sel = s.querySelector('[aria-selected="true"]'); if (!sel) return; padDays();
+  const L = sel.offsetLeft - 3, R = sel.offsetLeft + sel.offsetWidth + 3, vw = s.clientWidth, st = chipStarts();
+  let x = s.scrollLeft;
+  if (L < x || R > x + vw || !st.some(v => Math.abs(v - x) <= 1)) { const want = L - (vw - sel.offsetWidth) / 2; x = st.filter(v => v <= Math.max(0, want)).pop() ?? 0; if (R > x + vw) x = st.find(v => R - v <= vw) ?? L; }
+  s.scrollLeft = x; dayArrows();
+}
+function daysBy(dir) { const s = $('#days'), st = chipStarts(), x = s.scrollLeft;
+  const t = dir > 0 ? (st.find(v => v > x + s.clientWidth * .55) ?? st[st.length - 1]) : (st.filter(v => v < x - s.clientWidth * .45).pop() ?? 0);
+  s.scrollLeft = Math.min(t, s.scrollWidth - s.clientWidth); dayArrows(); }
+function dayArrows() { const s = $('#days'), over = s.scrollWidth > s.clientWidth + 2; $('#dPrev').hidden = $('#dNext').hidden = !over;
+  $('#dPrev').disabled = s.scrollLeft <= 2; $('#dNext').disabled = s.scrollLeft + s.clientWidth >= s.scrollWidth - 2; }
 function renderHour() {
   const w = W(), i = S.hour, v = w.base[i], hi = w.hi[i], c = catI(v);
   $('#hour').value = i; $('#hourLabel').textContent = `${dayLabel(i)}, ${hh(hourOf(i))}`;
@@ -108,14 +133,15 @@ function renderHour() {
   $('#worst').textContent = hh(hourOf(worst)); $('#worstSub').textContent = `${T('upto', { v: n0(w.hi[worst]) })}`;
   $('#chartH').textContent = T('chartH', { w: w.area }); const inf = dayInfo(S.day);
   $('#srcTag').textContent = inf.note === 'daily weather engine' ? T('srcWx', { r: (inf.gfs_run || '').replace('T', ' ') }) : inf.note === 'measured' ? T(dayKind(S.day) === 'kToday' ? 'srcToday' : 'srcMeas') : T('srcComp');
-  drawChart(); paintMap(); renderPlan(); drawCard(); if (S.lastDay !== S.day) { S.lastDay = S.day; renderMyDay(); renderRank(); }
+  drawChart(); paintMap(); renderPlan(); drawCard(); if (S.lastDay !== S.day) { S.lastDay = S.day; renderMyDay(); renderRank(); revealDay(true); }
 }
 
 /* ---------- hourly chart (plain SVG): a 3-day window around the selected day; measured hours dark, forecast orange ---------- */
 const isM = k => (D.kind || '')[k] === 'm';
 function drawChart() {
-  const svg = $('#chart'), W_ = svg.clientWidth || 800, H_ = svg.clientHeight || 340, m = { l: 44, r: 92, t: 30, b: 42 }, w = W(), N = D.hours.length;
-  const d0 = Math.max(0, Math.min(S.day - 1, NDAYS() - 3)), k0 = d0 * 24, k1 = Math.min(N - 1, k0 + 71), n = k1 - k0 + 1;
+  const svg = $('#chart'), W_ = svg.clientWidth || 800, H_ = svg.clientHeight || 340, narrow = W_ < 620, m = { l: 44, r: narrow ? 80 : 92, t: 30, b: 42 }, w = W(), N = D.hours.length;
+  // wide screens: 3 days around the selected day; phones: just the selected day, so the hour labels stay readable
+  const d0 = narrow ? S.day : Math.max(0, Math.min(S.day - 1, NDAYS() - 3)), k0 = d0 * 24, k1 = Math.min(N - 1, k0 + (narrow ? 23 : 71)), n = k1 - k0 + 1;
   const seg = w.hi.slice(k0, k1 + 1), iw = W_ - m.l - m.r, ih = H_ - m.t - m.b, top = Math.max(100, Math.min(300, Math.ceil(Math.max(...seg) * 1.12 / 20) * 20));
   const X = k => m.l + iw * (k - k0) / (n - 1), Y = v => m.t + ih * (1 - Math.min(v, top) / top);
   let g = '', lo = 0;
@@ -170,7 +196,7 @@ function renderPlan() {
 function buildMap() {
   map = L.map('map', { scrollWheelZoom: false, zoomSnap: .25, attributionControl: true }).setView([19.07, 72.87], 11);
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', maxZoom: 16 }).addTo(map);
-  wardLayer = L.geoJSON(GEO, { style: { weight: 1.5, color: '#fff', fillOpacity: .78 }, onEachFeature: (f, l) => l.on('click', () => { S.ward = f.properties.id; save(); renderAll();  }) }).addTo(map);
+  wardLayer = L.geoJSON(GEO, { style: { weight: 1.5, color: '#fff', fillOpacity: .78 }, onEachFeature: (f, l) => l.on('click', () => setWard(f.properties.id)) }).addTo(map);
   map.fitBounds(wardLayer.getBounds(), { padding: [8, 8] });
   D.stations.forEach(s => L.circleMarker([s.lat, s.lon], { radius: s.kind === 'forecast' ? 6 : 3.5, color: '#0f172a', weight: s.kind === 'forecast' ? 2.5 : 1, fillColor: '#fff', fillOpacity: 1 }).addTo(map)
     .bindTooltip(() => `${s.name}<br>${T(s.kind === 'forecast' ? 'stF' : 'stE')}`));
@@ -182,17 +208,19 @@ function paintMap() {
   const bad = D.wards.filter(w => w.base[i] > 60).sort((a, b) => b.base[i] - a.base[i]), t = `${dayLabel(i)} ${hh(hourOf(i))}`;
   $('#expH').textContent = bad.length ? T('expH', { t }) : T('expNone', { t });
   $('#expPeople').textContent = bad.reduce((s, w) => s + w.pop, 0).toLocaleString('en-IN'); $('#expKids').textContent = bad.reduce((s, w) => s + w.students, 0).toLocaleString('en-IN');
-  const ex = D.hours.map((_, k) => D.wards.filter(w => w.hi[k] > 60).reduce((s, w) => s + w.pop, 0)), kx = ex.indexOf(Math.max(...ex));
+  // worst moment from now on (forecast hours), not a past measured hour
+  const k0 = S.nowIdx != null ? S.nowIdx : D.hours.findIndex((_, k) => !isM(k)) >= 0 ? D.hours.findIndex((_, k) => !isM(k)) : 0;
+  const ex = D.hours.map((_, k) => k < k0 ? -1 : D.wards.filter(w => w.hi[k] > 60).reduce((s, w) => s + w.pop, 0)), kx = ex.indexOf(Math.max(...ex));
   const kids = D.wards.filter(w => w.hi[kx] > 60).reduce((s, w) => s + w.students, 0);
-  $('#expNote').innerHTML = `${T('expPeak', { t: `${dayLabel(kx)} ${hh(hourOf(kx))}`, p: (ex[kx] / 1e5).toFixed(1), s: (kids / 1e5).toFixed(1) })} <button class="linkbtn" id="goPeak">${T('show')}</button><br><span>${T('expNote')}</span>`;
-  $('#goPeak').onclick = () => { S.hour = kx; S.day = Math.floor(kx / 24); renderHour(); };
+  $('#expNote').innerHTML = (ex[kx] > 0 ? `${T('expPeak', { t: `${dayLabel(kx)} ${hh(hourOf(kx))}`, p: (ex[kx] / 1e5).toFixed(1), s: (kids / 1e5).toFixed(1) })} <button class="linkbtn" id="goPeak">${T('show')}</button><br>` : '') + `<span>${T('expNote')}</span>`;
+  if ($('#goPeak')) $('#goPeak').onclick = () => { S.hour = kx; S.day = Math.floor(kx / 24); renderHour(); };
   $('#expList').innerHTML = bad.slice(0, 6).map(w => `<li><span class="sw" style="background:${colOf(w.base[i])}"></span><b>${w.area}</b><span>${n0(w.base[i])} · ${(w.pop / 1e5).toFixed(1)} lakh</span></li>`).join('');
 }
 function locate() {
   if (!navigator.geolocation) { $('#locMsg').textContent = T('locErr'); return; } $('#locMsg').textContent = T('locating');
   navigator.geolocation.getCurrentPosition(p => { const { latitude: la, longitude: lo } = p.coords; let best = null, bd = 1e9;
     D.wards.forEach(w => { const d = Math.hypot((w.lat - la) * 111, (w.lon - lo) * 105); if (d < bd) { bd = d; best = w; } });
-    S.ward = best.id; save(); renderAll(); $('#locMsg').textContent = T(bd > 25 ? 'locFar' : 'locFound', { w: best.area }); }, () => { $('#locMsg').textContent = T('locErr'); }, { timeout: 10000 });
+    setWard(best.id); $('#locMsg').textContent = T(bd > 25 ? 'locFar' : 'locFound', { w: best.area }); }, () => { $('#locMsg').textContent = T('locErr'); }, { timeout: 10000 });
 }
 
 /* ---------- my day, less smoke ---------- */
@@ -203,6 +231,7 @@ try { Object.assign(MD, JSON.parse(localStorage.getItem('airpulse-myday') || '{}
 const saveMD = () => { try { localStorage.setItem('airpulse-myday', JSON.stringify(MD)); } catch (e) {} };
 function initMyDay() {
   ['fHome', 'fWork', 'fGo', 'fBack', 'fEx', 'fExAt', 'fKids'].forEach(id => $('#' + id).onchange = e => { const k = { fHome: 'home', fWork: 'work', fGo: 'go', fBack: 'back', fEx: 'ex', fExAt: 'exAt', fKids: 'kids' }[id];
+    if (k === 'home') { setWard(e.target.value); return; }
     MD[k] = ['go', 'back', 'exAt', 'kids'].includes(k) ? (e.target.value === 'none' ? null : +e.target.value) : e.target.value; saveMD(); renderMyDay(); });
 }
 function fillMyDaySelects() {
@@ -257,8 +286,8 @@ function rankCsv() { const rows = [['rank', 'ward', 'area', 'population', 'schoo
 
 /* ---------- listen (Web Speech API; uses the device's Google / system voices) ---------- */
 function speak(what, btn) {
-  if (!('speechSynthesis' in window)) { alertMsg(T('noVoice')); return; } const ss = window.speechSynthesis;
-  if (ss.speaking) { ss.cancel(); $$('.listen').forEach(b => b.classList.remove('speaking')); return; }
+  if (!('speechSynthesis' in window)) { alertMsg(T('noVoice')); return; } const ss = window.speechSynthesis, was = btn.classList.contains('speaking');
+  if (ss.speaking || ss.pending || was) { ss.cancel(); listenReset(); if (was) return; }
   const w = W(), i = S.hour; let text = '';
   if (what === 'now') text = T('sayNow', { a: w.area, t: `${dayLabel(i)}, ${hh(hourOf(i))}`, v: n0(w.base[i]), c: T('cat')[catI(w.base[i])] });
   if (what === 'plan') text = $('#answer').innerText.replace(/\s+/g, ' ');
@@ -266,8 +295,9 @@ function speak(what, btn) {
   const want = { en: ['en-IN', 'en-GB', 'en'], hi: ['hi-IN'], mr: ['mr-IN', 'hi-IN'] }[lang], vs = ss.getVoices();
   const v = want.map(l => vs.find(x => x.lang.replace('_', '-').toLowerCase().startsWith(l.toLowerCase()))).find(Boolean);
   const u = new SpeechSynthesisUtterance(text); u.lang = v ? v.lang : want[0]; if (v) u.voice = v; u.rate = .92;
-  u.onend = u.onerror = () => btn.classList.remove('speaking'); btn.classList.add('speaking'); ss.speak(u);
+  u.onend = u.onerror = () => listenReset(btn); btn.classList.add('speaking'); btn.querySelector('span').textContent = T('stop'); ss.speak(u);
 }
+function listenReset(only) { (only ? [only] : $$('.listen')).forEach(b => { b.classList.remove('speaking'); b.querySelector('span').textContent = T('listen'); }); }
 function alertMsg(m) { const t = $('#tip'); t.textContent = m; t.style.opacity = 1; t.style.left = '20px'; t.style.top = '80px'; setTimeout(() => t.style.opacity = 0, 3000); }
 if ('speechSynthesis' in window) speechSynthesis.getVoices();
 
