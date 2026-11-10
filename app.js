@@ -34,6 +34,7 @@ const W = () => D.wards.find(w => w.id === S.ward);
 const dayIdx = d => [...Array(24)].map((_, k) => d * 24 + k);
 const NDAYS = () => D.hours.length / 24;
 
+let BRIEF = null; fetch('data/brief.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => { BRIEF = j; if (D) renderBrief(); }).catch(() => {});
 let STATUS = null; fetch('data/status.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => { STATUS = j; STATUS_CHANGED = true; if (D) renderPipe(); }).catch(() => {});
 fetch('data/city.json').then(r => r.json()).then(c => { D = c; return fetch('data/wards.geo.json'); }).then(r => r.json()).then(g => { GEO = g; init(); })
   .catch(e => { $('main').insertAdjacentHTML('afterbegin', `<p class="card">Could not load data (${e}). Serve this folder over http.</p>`); });
@@ -63,8 +64,13 @@ function applyLang() {
   $$('[data-t]').forEach(el => el.textContent = T(el.dataset.t)); $('#sources').textContent = T('sources'); if (D) buildLegend();
 }
 function setWard(id) { S.ward = id; MD.home = id; save(); saveMD(); renderAll(); }
-function renderAll() { renderHero(); renderPipe(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
+function renderAll() { renderBrief(); renderHero(); renderPipe(); $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
 
+/* ---------- daily brief written by Google Gemini in the cloud job (data/brief.json); shown only while it is current ---------- */
+function renderBrief() {
+  const el = $('#brief'), ok = BRIEF && BRIEF[lang] && (BRIEF.for || []).some(d => d >= todayIST()); el.hidden = !ok; if (!ok) return;
+  $('#briefTxt').textContent = BRIEF[lang]; $('#briefNote').textContent = `${T('briefNote')} ${BRIEF.model} · ${(BRIEF.made || '').replace('T', ' ').replace('Z', ' UTC')}`;
+}
 /* ---------- hero: right now in Mumbai ---------- */
 function renderHero() {
   const i = S.nowIdx != null ? S.nowIdx : S.hour, pop = D.wards.reduce((a, w) => a + w.pop, 0), city = D.wards.reduce((a, w) => a + w.base[i] * w.pop, 0) / pop, c = catI(city);
@@ -189,9 +195,14 @@ function renderPlan() {
     $('#answer').innerHTML = `<div class="ans-main"><p class="eyebrow">${dayLabel(d * 24)} · ${w.area}</p><h3>${T('workNote', { v: n0(m), c: T('cat')[catI(m)], t: hh(hourOf(worst)) })}</h3><p>${advice(w.hi[worst], a)}</p></div><div class="bars">${bar}</div>`; return; }
   $('#answer').innerHTML = `<div class="ans-main"><p class="eyebrow">${dayLabel(d * 24)} · ${w.area} · ${T('acts.' + S.act)}</p>
     <h3>${T('go', { t: hh(hourOf(best)) })} <span class="band" style="background:${colOf(w.base[best])}">${T('cat')[catI(w.base[best])]} · ${n0(w.base[best])}</span></h3>
-    <p class="avoid">${T('avoid')}: <b>${hh(hourOf(worst))}</b> · ${T('upto', { v: n0(w.hi[worst]) })}</p><p>${advice(w.base[best], a)}</p></div><div class="bars" aria-hidden="true">${bar}</div>`;
+    <p class="avoid">${T('avoid')}: <b>${hh(hourOf(worst))}</b> · ${T('upto', { v: n0(w.hi[worst]) })}</p><p>${advice(w.base[best], a)}</p><div class="cal-row"><a class="btn ghost small" id="gcal" target="_blank" rel="noopener" href="${calUrl(best, w)}"><svg class="ic"><use href="#i-cal"/></svg> <span>${T('cal')}</span></a></div></div><div class="bars" aria-hidden="true">${bar}</div>`;
 }
 
+// Google Calendar event for the cleanest hour (no sign-in or key needed: the link opens Google Calendar's own form)
+function calUrl(k, w) { const iso = D.hours[k], d = iso.slice(0, 10).replaceAll('-', ''), h = +iso.slice(11, 13), t = x => String(x).padStart(2, '0') + '0000';
+  const end = h + 1 < 24 ? d + 'T' + t(h + 1) : d + 'T235900', q = new URLSearchParams({ action: 'TEMPLATE', text: T('calText', { a: T('acts.' + S.act), w: w.area }),
+    dates: `${d}T${t(h)}/${end}`, ctz: 'Asia/Kolkata', details: T('calDetails', { v: n0(w.base[k]), c: T('cat')[catI(w.base[k])] }), location: `${w.area}, Mumbai` });
+  return 'https://calendar.google.com/calendar/render?' + q; }
 /* ---------- city map ---------- */
 function buildMap() {
   map = L.map('map', { scrollWheelZoom: false, zoomSnap: .25, attributionControl: true }).setView([19.07, 72.87], 11);
@@ -202,6 +213,7 @@ function buildMap() {
     .bindTooltip(() => `${s.name}<br>${T(s.kind === 'forecast' ? 'stF' : 'stE')}`));
 }
 function paintMap() {
+  { const w = W(); $('#gmaps').href = `https://www.google.com/maps/search/?api=1&query=${w.lat},${w.lon}`; $('#gmaps').title = `${w.area}, Mumbai`; }
   if (!wardLayer) return; const i = S.hour, by = Object.fromEntries(D.wards.map(w => [w.id, w]));
   wardLayer.eachLayer(l => { const w = by[l.feature.properties.id], v = w.base[i]; l.setStyle({ fillColor: colOf(v), weight: w.id === S.ward ? 4 : 1.5, color: w.id === S.ward ? '#0f172a' : '#fff' });
     l.bindTooltip(`<b>${w.area}</b> (${w.ward})<br>${n0(v)} µg/m³ · ${T('cat')[catI(v)]}`, { sticky: true }); if (w.id === S.ward) l.bringToFront(); });
@@ -292,6 +304,7 @@ function speak(what, btn) {
   if (what === 'now') text = T('sayNow', { a: w.area, t: `${dayLabel(i)}, ${hh(hourOf(i))}`, v: n0(w.base[i]), c: T('cat')[catI(w.base[i])] });
   if (what === 'plan') text = $('#answer').innerText.replace(/\s+/g, ' ');
   if (what === 'myday') text = $('#dose').dataset.say || '';
+  if (what === 'brief') text = $('#briefTxt').textContent;
   const want = { en: ['en-IN', 'en-GB', 'en'], hi: ['hi-IN'], mr: ['mr-IN', 'hi-IN'] }[lang], vs = ss.getVoices();
   const v = want.map(l => vs.find(x => x.lang.replace('_', '-').toLowerCase().startsWith(l.toLowerCase()))).find(Boolean);
   const u = new SpeechSynthesisUtterance(text); u.lang = v ? v.lang : want[0]; if (v) u.voice = v; u.rate = .92;

@@ -30,7 +30,8 @@ A white, single-page dashboard (DM Sans; Noto Sans Devanagari for Hindi and Mara
 | **Who is breathing bad air** | People and school students in wards at Moderate or worse at that hour, the worst wards, and the worst moment still ahead |
 | **City map** | All 24 wards coloured hour by hour; forecast and estimated stations; click a ward to select it |
 | **For BMC: tonight's priority wards** | Wards ranked by people × how far and how long the air goes above 60 µg/m³, the start of Moderate (20:00–06:00, if smoke lingers), with peak and schools; CSV download for BMC's 76 ward squads |
-| **Plan my day** | Walk, run, kids playing, commute, elderly / heart-lung, outdoor work: the cleanest hour, the hour to avoid, plain advice |
+| **Today's air brief** | A short summary of today and tomorrow in your language, written by Google Gemini from the forecast numbers (every number checked) |
+| **Plan my day** | Walk, run, kids playing, commute, elderly / heart-lung, outdoor work: the cleanest hour, the hour to avoid, plain advice, and **Add to Google Calendar** |
 | **My exposure, and how to cut it** | Home ward, work ward, commute times, exercise and children's outdoor time → PM2.5 breathed in outdoors (µg, US EPA breathing rates) and a cleaner plan, e.g. 250 → 200 µg (−20%) |
 | **Share with family** | A picture of your area's air in your language, for WhatsApp |
 | **How accurate is this?** | How the model was built and tested, linking to the full evidence dashboard (`/evidence`, which links back to the app) |
@@ -46,6 +47,9 @@ Links can preselect language, ward and hour: `?lang=mr&ward=ME&hour=1`.
 | **Firebase Hosting** | Serves the live app at `airpulse-mumbai-2026.web.app` over HTTPS on Google's global CDN; pages, scripts and data are served with `no-cache`, so each forecast refresh shows up at once | `firebase.json`, `.firebaserc`; deployed with `firebase deploy --only hosting` |
 | **Google Cloud** | The Firebase project `airpulse-mumbai-2026` is a Google Cloud project. A hosting-only service account (IAM) lets the cloud job publish each new forecast | Firebase console → project `airpulse-mumbai-2026`; `.github/workflows/daily-forecast.yml` |
 | **Google Fonts** | *DM Sans* for Latin text and *Noto Sans Devanagari* (Google's Noto family) so Hindi and Marathi render cleanly on every phone | `<link>` in `index.html` |
+| **Gemini** (Gemini API, `gemini-2.5-flash`) | Writes the **daily air brief** at the top of the app in English, Hindi and Marathi, from the forecast numbers only. The cloud job rejects any reply that contains a number not in those facts, or emoji, or wrong digits, and keeps the previous brief instead; the brief shows only while it is for today or tomorrow, labelled "Google Gemini" | `cloud/gemini_brief.py` → `data/brief.json`; key kept as the encrypted secret `GEMINI_API_KEY` |
+| **Google Calendar** | **Add to Google Calendar** in *Plan my day* opens a ready event for the cleanest hour of the chosen activity, in the user's language, Mumbai time zone; no sign-in to AirPulse, no key | `calUrl()` in `app.js` |
+| **Google Maps** | **Open in Google Maps** on the city map opens the selected ward | `paintMap()` in `app.js` |
 | **Google text-to-speech voices** (Chrome and Android, through the Web Speech API) | The **Listen** button reads the forecast, the advice and the personal plan aloud in English, Hindi or Marathi; on Android and Chrome these are Google's voices. Marathi falls back to Hindi when no Marathi voice is installed | `speak()` in `app.js` |
 
 The forecast itself comes from our competition model (LightGBM with NOAA GFS weather). The extra city data comes from the ClimateVerse catalogue: BMC wards and population, and UDISE+ schools.
@@ -77,8 +81,9 @@ The application updates itself in the cloud, from `.github/workflows/daily-forec
 |---|---|---|
 | 1. Weather | Downloads the newest NOAA GFS runs (1°, forecast hours 6–81) from the NOAA Open Data bucket on AWS and reads six fields at the four stations with ecCodes | `cloud/cloud_update.py` |
 | 2. Forecast | Daily weather engine (`cloud/wx_lgbm.txt`, LightGBM); the newest run wins for every hour; history kept in `cloud/store.csv` | `cloud/cloud_update.py` |
+| 3a. Brief | Google Gemini writes the daily brief from the forecast facts; replies with any number not in the facts are rejected (skipped if no key) | `cloud/gemini_brief.py` |
 | 3. City | 4 → 26 stations (ridge transfer + distance weighting, `cloud/transfer.json`), then 24 wards; adds every complete new day after the fixed part (`cloud/base_city.json`: measured week + submitted 11–12 Nov forecast) | `cloud/cloud_update.py` |
-| 4. Quality gate | The 68 browser checks in headless Chrome: all three languages, a computer screen and a 390 px phone screen, and the evidence page; **nothing is published if one fails** | workflow, `tests/run.html` |
+| 4. Quality gate | The 71 browser checks in headless Chrome: all three languages, a computer screen and a 390 px phone screen, and the evidence page; **nothing is published if one fails** | workflow, `tests/run.html` |
 | 5. Publish | Firebase Hosting (Google Cloud) through a hosting-only service account kept as the encrypted secret `FIREBASE_SERVICE_ACCOUNT` | `FirebaseExtended/action-hosting-deploy` |
 | 6. Record | Commits `data/city.json`, `data/status.json` and `cloud/store.csv` back to this repository | workflow |
 
@@ -106,12 +111,13 @@ The cloud job above makes the daily update. `scripts/daily_update.sh` is the ear
 
 ## Tests
 
-`tests/run.html` opens the app and clicks through every control. It checks 68 things:
+`tests/run.html` opens the app and clicks through every control. It checks 71 things:
 
 | Group | Checks |
 |---|---|
 | Look | white background, DM Sans, no emoji, page title |
 | Data | 24 wards, the full timeline (measured days, today, forecast days), Today / Tomorrow labels, which engine made each day |
+| Google links | the Google Calendar event is for the cleanest hour shown (Mumbai time), the Google Maps link opens the selected ward, the Gemini brief shows only while it is current |
 | Panels | KPIs, chart (measured line, forecast line, hour picking), all 24 ward shapes and map tiles, exposure counts, BMC ranking, all six activities, the exposure planner, the share picture, five accuracy cards, the six-stage pipeline with Google tools |
 | Controls | ward picker, day tabs, day-strip arrows, hour slider, play, map click; the day strip never starts on a cut-off day and always shows the chosen day |
 | Linked choices | picking an area sets *I live in*, and changing *I live in* changes the area |
@@ -122,7 +128,7 @@ The cloud job above makes the daily update. `scripts/daily_update.sh` is the ear
 
 ```bash
 python3 -m http.server 8766          # from the repo root
-# open http://localhost:8766/tests/run.html     ->   RESULT: 68 passed, 0 failed
+# open http://localhost:8766/tests/run.html     ->   RESULT: 71 passed, 0 failed
 # open http://localhost:8766/tests/phone.html   ->   the app in two phone-sized frames (English, Marathi)
 ```
 

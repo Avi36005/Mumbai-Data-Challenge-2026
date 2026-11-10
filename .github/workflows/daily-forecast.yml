@@ -26,12 +26,16 @@ jobs:
           pip install -q -r cloud/requirements.txt
       - name: Forecast (NOAA GFS -> engine -> wards)
         run: python cloud/cloud_update.py
+      - name: Daily brief by Google Gemini (skipped when the GEMINI_API_KEY secret is not set)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python cloud/gemini_brief.py
       - name: Cache-busting version stamp
         run: |
           V=$(date -u +%Y%m%d%H%M)
           sed -i -E "s#(app\.css|i18n\.js|app\.js)\?v=[0-9a-z]+#\1?v=$V#g" index.html
           sed -i -E "s#const CACHE = 'airpulse-[0-9a-z]+';#const CACHE = 'airpulse-$V';#; s#\?v=[0-9a-z]+'#?v=$V'#g" sw.js
-      - name: Browser tests (68 checks, EN / HI / MR, computer + phone, evidence page); nothing is published if one fails
+      - name: Browser tests (71 checks, EN / HI / MR, computer + phone, evidence page); nothing is published if one fails
         run: |
           python3 -m http.server 8799 > /dev/null 2>&1 &
           sleep 2
@@ -56,5 +60,6 @@ jobs:
           git config user.name "Avi36005"
           git config user.email "177668299+Avi36005@users.noreply.github.com"
           git add data/city.json data/status.json cloud/store.csv
+          if [ -f data/brief.json ]; then git add data/brief.json; fi
           git diff --cached --quiet || git commit -q -m "Cloud forecast update $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M IST')"
           git push -q

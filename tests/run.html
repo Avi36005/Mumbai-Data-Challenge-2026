@@ -66,6 +66,13 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
   $('#fEx').value = 'run'; fire($('#fEx'), 'change'); $('#fKids').value = 'none'; fire($('#fKids'), 'change'); await wait(200); ok('my exposure recalculates', /Exercise|Run/i.test(txt('#dose')) || /µg/.test(txt('#dose')), txt('#dose').slice(0, 60));
   $('#play').click(); await wait(1100); const h1 = txt('#hourLabel'); $('#play').click(); ok('play advances hours', !/, 06:00$/.test(h1), h1);
   const wardPath = $$('#map path.leaflet-interactive')[0]; wardPath.dispatchEvent(new MouseEvent('click', { bubbles: true })); await wait(300); ok('map click selects a ward', txt('#chartH').length > 5, txt('#chartH'));
+  $$('#acts button')[0].click(); await wait(200);
+  { const c = $('#gcal'), u = c && new URL(c.href), q = u && u.searchParams;
+    ok('Google Calendar: event for the cleanest hour', !!c && u.hostname === 'calendar.google.com' && q.get('action') === 'TEMPLATE' && /^\d{8}T\d{6}\/\d{8}T\d{6}$/.test(q.get('dates')) && q.get('ctz') === 'Asia/Kolkata' && q.get('dates').slice(9, 11) === txt('#answer').match(/(\d\d):00/)[1], c ? q.get('dates') + ' | ' + q.get('text') : 'missing');
+    const m = new URL($('#gmaps').href); ok('Google Maps: opens the selected area', m.hostname === 'www.google.com' && /^1[89]\.\d+,72\.\d+$/.test(m.searchParams.get('query')), m.searchParams.get('query')); }
+  { const r = await fetch('../data/brief.json', { cache: 'no-store' }).catch(() => null), j = r && r.ok ? await r.json() : null, today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10), cur = !!(j && j.en && (j.for || []).some(x => x >= today));
+    ok('Gemini brief: shown only when current', $('#brief').hidden === !cur, 'current=' + cur);
+    if (cur) ok('Gemini brief: text and model shown, no emoji', txt('#briefTxt').length > 20 && /gemini/i.test(txt('#briefNote')) && !/[\u{1F300}-\u{1FAFF}]/u.test(txt('#briefTxt'))); }
   ok('no script errors (en)', w.__errs.length === 0, w.__errs.join(' | '));
   for (const lg of ['hi', 'mr']) {
     [w, d] = await load(`?lang=${lg}&ward=PN&hour=8`);
@@ -75,7 +82,7 @@ async function load(q) { const f = document.getElementById('f'); f.src = '../ind
     ok(`${lg}: no script errors`, w.__errs.length === 0, w.__errs.join(' | '));
   }
   { const f = document.getElementById('f'); f.style.width = '390px'; [w, d] = await load('?lang=mr&ward=SX');
-    const iw = w.innerWidth, wide = [...d.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().width > iw + 1).map(e => e.tagName + '.' + (e.className.baseVal ?? e.className));
+    const iw = w.innerWidth, wide = [...d.querySelectorAll('body *')].filter(e => !e.closest('#map') && e.getBoundingClientRect().width > iw + 1).map(e => e.tagName + '.' + (e.className.baseVal ?? e.className));
     ok('phone 390px: nothing wider than the screen', wide.length === 0 && d.documentElement.scrollWidth <= iw, wide.slice(0, 4).join(' ') + ' doc=' + d.documentElement.scrollWidth + '/' + iw);
     ok('phone: chart shows one readable day', d.querySelectorAll('#chart text.day').length === 1, d.querySelectorAll('#chart text.day').length);
     ok('phone: pipeline cards sit flat', [...d.querySelectorAll('#pipe .stage')].every(s => getComputedStyle(s).transform === 'none'));

@@ -189,3 +189,9 @@ html{scroll-padding-top:176px}
 #howLive{white-space:nowrap}
 @media (max-width:640px){.stage{animation:none;transform:none}.pipe-card .card-head{flex-wrap:wrap}}
 @media (max-width:560px){.form-grid label:nth-child(1),.form-grid label:nth-child(2),.form-grid label:nth-child(5){grid-column:1/-1}.trust-grid{grid-template-columns:1fr}}
+
+/* Gemini brief, Google Calendar and Maps links */
+.brief{border-color:#c7d7fe;background:linear-gradient(180deg,#f7f9ff,#fff)}
+.brief-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.brief-head .kicker{margin:0}.brief-head .listen{margin-left:auto}
+.brief .g-tool{margin-left:0}.brief-txt{font-size:clamp(16px,1.5vw,18.5px);line-height:1.55;margin:10px 0 4px;max-width:90ch}
+.cal-row{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
