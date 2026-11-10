@@ -78,11 +78,33 @@ summary = {'stations_modelled':len(models),'holdout':{'stations':len(hv),'hours'
     'better':int((jv.oct26_rmse<jv.oct26_rmse_idw).sum()) if len(jv) else 0}}
 print(json.dumps(summary))
 # ---------- apply to the submitted 11-12 Nov forecast ----------
-Sx = pd.Timestamp('2026-11-11',tz=IST);te = test.copy();te['location_id'] = te.location_id.astype(str);w = te[(te.hour_start>=Sx)&(te.hour_start<Sx+pd.Timedelta(days=2))].copy()
-F = {'base':'FINAL_11-12Nov_CLIP125.csv','hi':'FINAL_11-12Nov_CLIP125_NIGHTUPLIFT.csv'};fc = {}
-for k,f in F.items():
-    w[k] = pd.read_csv(P/'FINAL_UPLOAD_11-12Nov'/f).set_index('ID').Target.reindex(w.ID).to_numpy();fc[k] = w.pivot_table(index='hour_start',columns='location_id',values=k)[list(TARGET)]
-    fc[k].index = fc[k].index.tz_convert(IST);assert len(fc[k])==48 and fc[k].notna().all().all()
+# Forecast windows: airpulse_city/windows.json lists 48-hour builds in the order they were made. The submitted 11-12 Nov pair comes first;
+# each later daily build only ADDS days that no earlier window covers (the submitted competition forecast is never overwritten).
+te = test.copy();te['location_id'] = te.location_id.astype(str);te['hour_start'] = te.hour_start.dt.tz_convert(IST)
+WIN = json.loads((H/'windows.json').read_text()) if (H/'windows.json').exists() else [{'start':'2026-11-11','base':'FINAL_UPLOAD_11-12Nov/FINAL_11-12Nov_CLIP125.csv','hi':'FINAL_UPLOAD_11-12Nov/FINAL_11-12Nov_CLIP125_NIGHTUPLIFT.csv','built':'2026-11-10 12:46 IST','note':'submitted competition forecast'}]
+parts = {'base':[],'hi':[]};covered = set();winfo = []
+for wdef in WIN:
+    S0 = pd.Timestamp(wdef['start'],tz=IST);w = te[(te.hour_start>=S0)&(te.hour_start<S0+pd.Timedelta(days=2))].copy();assert len(w)==192,(wdef,len(w))
+    for k in ('base','hi'):w[k] = pd.read_csv(P/wdef[k]).set_index('ID').Target.reindex(w.ID).to_numpy()
+    days = [d for d in sorted(w.hour_start.dt.date.unique()) if d not in covered];w = w[w.hour_start.dt.date.isin(days)]
+    if not len(w):continue
+    for k in ('base','hi'):pt = w.pivot_table(index='hour_start',columns='location_id',values=k)[list(TARGET)];assert pt.notna().all().all();parts[k].append(pt)
+    covered |= set(days);winfo.append({'days':[str(d) for d in days],'built':wdef.get('built'),'note':wdef.get('note',''),'gap_h':wdef.get('gap_h')})
+# Later days: the daily weather engine (wx_engine.py), complete days only (24 h x 4 stations). No Diwali uplift after LP+4, so 'hi' = 'base'.
+stf = H/'store/wx_forecasts.csv'
+if stf.exists():
+    st = pd.read_csv(stf,dtype={'location_id':str});st['vt'] = pd.to_datetime(st.vt).dt.tz_convert(IST);st['day'] = st.vt.dt.date
+    first = min(covered) if covered else None
+    for day,g in st.groupby('day'):
+        if day in covered or (first and day<first) or g.vt.nunique()<24 or g.location_id.nunique()<4:continue
+        pt = g.pivot_table(index='vt',columns='location_id',values='p')[list(TARGET)];pt.index.name = 'hour_start'
+        if pt.isna().any().any() or len(pt)!=24:continue
+        parts['base'].append(pt);parts['hi'].append(pt.copy());covered.add(day)
+        winfo.append({'days':[str(day)],'built':str(g.built.max()),'note':'daily weather engine','gfs_run':str(pd.to_datetime(g.cycle,utc=True).max())[:16]+'Z'})
+fc = {k:pd.concat(v).sort_index() for k,v in parts.items()}
+days_all = sorted({t.date() for t in fc['base'].index});full = pd.date_range(pd.Timestamp(days_all[0],tz=IST),pd.Timestamp(days_all[-1],tz=IST)+pd.Timedelta(hours=23),freq='h')
+assert fc['base'].index.is_monotonic_increasing and len(fc['base'])%24==0 and len(fc['base'])==len(full),'forecast days must be contiguous'
+print('forecast days:',[x['days'] for x in winfo])
 hours = [t.strftime('%Y-%m-%dT%H:%M') for t in fc['base'].index];stations = []
 for k_,nm in TARGET.items():stations.append({'name':nm,'lat':float(tpos.loc[k_,'latitude']),'lon':float(tpos.loc[k_,'longitude']),'kind':'forecast','base':[r1(v) for v in fc['base'][k_]],'hi':[r1(v) for v in fc['hi'][k_]]})
 for nm,m in models.items():
@@ -116,7 +138,7 @@ for f in json.load(open(H/'raw/wards.geojson'))['features']:
     geo['features'].append({'type':'Feature','properties':{'id':ab},'geometry':{'type':'Polygon','coordinates':[[[round(float(x),5),round(float(y),5)] for x,y in simp]]}})
 assert all(w_['pop']>0 for w_ in wards),[w_['id'] for w_ in wards if not w_['pop']]
 print('wards',len(wards),'pop',sum(w_['pop'] for w_ in wards),'schools',sum(w_['schools'] for w_ in wards),'students',sum(w_['students'] for w_ in wards),'| geo points',sum(len(f['geometry']['coordinates'][0]) for f in geo['features']))
-(OUT/'city.json').write_text(json.dumps({'hours':hours,'wards':wards,'stations':stations,'validation':{'summary':summary,'stations':[{k:v for k,v in r.items()} for r in val]},
+(OUT/'city.json').write_text(json.dumps({'hours':hours,'windows':winfo,'generated':pd.Timestamp.now(tz=IST).strftime('%Y-%m-%d %H:%M IST'),'wards':wards,'stations':stations,'validation':{'summary':summary,'wx':json.loads((H/'models/wx_validation.json').read_text()) if (H/'models/wx_validation.json').exists() else None,'stations':[{k:v for k,v in r.items()} for r in val]},
     'sources':{'population':'BMC prabhag boundaries with population (ClimateVerse doi:10.71646/EREDWQ); Census-based, total %d'%sum(w_['pop'] for w_ in wards),
                'schools':'UDISE+ 2024-25, district Mumbai II, %d schools with a ward recorded (ClimateVerse doi:10.71646/XJIY8W)'%len(prof),'wards':'BMC administrative ward boundaries (ClimateVerse doi:10.71646/2DGEEJ)',
                'stations':'Zindi challenge package: Train.csv, AdditionalHistory (XKDR 2024, other Mumbai stations Oct 2026)'}},separators=(',',':')))

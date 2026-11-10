@@ -58,6 +58,15 @@ firebase login
 firebase deploy --only hosting --project airpulse-mumbai-2026
 ```
 
+## Two forecast engines
+
+| Days | Engine | Inputs | Tested |
+|---|---|---|---|
+| **11–12 Nov 2026** | Our **competition model** (LightGBM blend, the exact files submitted to Zindi) | Zindi Train to 10 Nov 09:00 + NOAA GFS as issued | 28 backtest windows; past Diwalis |
+| **Every later day** | The **daily weather engine** (`scripts/wx_engine.py`): LightGBM that predicts PM2.5 from the GFS forecast, hour, day of year and station; it needs no fresh PM readings, so it keeps working after the last Zindi release | NOAA GFS runs (00Z, 12Z), trained on 278,000 station-hours of Zindi Train | Out-of-time, 1 Sep – 5 Nov 2026, 1–3 days ahead: hourly RMSE **14.4** vs 18.8 for the usual level of that month and hour (−23%); daily correlation **0.75** |
+
+**Daily update** (`scripts/daily_update.sh`): download the newest GFS runs → engine forecast → 24 wards → run the 44 browser tests → deploy to Firebase → push here. Nothing is deployed if a test fails. Each day's tab says which engine made it.
+
 ## How it works
 
 1. **Four-station forecast.** Our competition model (LightGBM, trained with NOAA GFS weather as it was issued) forecasts the four official stations for 11–12 Nov 2026, exactly as submitted to the competition.

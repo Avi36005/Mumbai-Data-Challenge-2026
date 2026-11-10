@@ -23,8 +23,12 @@ const T = (k, vars) => { let s = k.split('.').reduce((o, p) => o && o[p], I18N[l
 const n0 = v => Math.round(v), n1 = v => (Math.round(v * 10) / 10).toFixed(1);
 const hh = h => String(h).padStart(2, '0') + ':00';
 const hourOf = i => +D.hours[i].slice(11, 13);
+const todayIST = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
 const dayLabel = i => { const s = D.hours[i], y = +s.slice(0, 4), m = +s.slice(5, 7), d = +s.slice(8, 10); const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return `${T('days')[wd]} ${d} ${T('months')[m - 1]}`; };
+const dayTab = dd => { const iso = D.hours[dd * 24].slice(0, 10), t = todayIST(), tm = new Date(Date.parse(t) + 864e5).toISOString().slice(0, 10);
+  return iso === t ? `${T('today')} · ${dayLabel(dd * 24).split(' ').slice(1).join(' ')}` : iso === tm ? `${T('tomorrow')} · ${dayLabel(dd * 24).split(' ').slice(1).join(' ')}` : dayLabel(dd * 24); };
+const dayInfo = dd => (D.windows || []).find(w => w.days.includes(D.hours[dd * 24].slice(0, 10))) || {};
 const W = () => D.wards.find(w => w.id === S.ward);
 const dayIdx = d => [...Array(24)].map((_, k) => d * 24 + k);
 const NDAYS = () => D.hours.length / 24;
@@ -34,10 +38,10 @@ fetch('data/city.json').then(r => r.json()).then(c => { D = c; return fetch('dat
 
 function init() {
   if (!D.wards.some(w => w.id === S.ward)) S.ward = 'GN';
-  const now = new Date(), idx = D.hours.findIndex(h => Math.abs(new Date(h + ':00+05:30') - now) < 1800e3);
+  const now = new Date(), idx = D.hours.findIndex(h => Math.abs(new Date(h + ':00+05:30') - now) < 1800e3), td = D.hours.findIndex(h => h.slice(0, 10) === todayIST());
   const qh = new URLSearchParams(location.search).get('hour');
   $('#hour').max = D.hours.length - 1;
-  S.hour = qh != null && +qh >= 0 && +qh < D.hours.length ? +qh : idx >= 0 ? idx : 8; S.day = Math.floor(S.hour / 24);
+  S.hour = qh != null && +qh >= 0 && +qh < D.hours.length ? +qh : idx >= 0 ? idx : td >= 0 ? td + 8 : D.hours.length > 48 ? D.hours.length - 48 + 8 : 8; S.day = Math.floor(S.hour / 24);
   $('#ward').innerHTML = D.wards.slice().sort((a, b) => a.area.localeCompare(b.area)).map(w => `<option value="${w.id}">${w.area} (${w.ward})</option>`).join('');
   $('#ward').onchange = e => { S.ward = e.target.value; save(); renderAll(); };
   $('#locate').onclick = locate;
@@ -56,7 +60,8 @@ function renderAll() { $('#ward').value = S.ward; renderDays(); renderHour(); re
 
 /* ---------- now card ---------- */
 function renderDays() {
-  $('#days').innerHTML = [...Array(NDAYS())].map((_, d) => `<button role="tab" aria-selected="${S.day === d}" data-d="${d}">${dayLabel(d * 24)}</button>`).join('');
+  const t0 = D.hours.findIndex(h => h.slice(0, 10) >= todayIST()), first = t0 >= 0 ? Math.max(0, Math.floor(t0 / 24)) : Math.max(0, NDAYS() - 3);
+  $('#days').innerHTML = [...Array(NDAYS())].map((_, d) => d).filter(d => d >= first || d === S.day).map(d => `<button role="tab" aria-selected="${S.day === d}" data-d="${d}">${dayTab(d)}</button>`).join('');
   $$('#days button').forEach(b => b.onclick = () => { const d = +b.dataset.d; S.hour = d * 24 + (S.hour % 24); S.day = d; renderHour(); });
 }
 function renderHour() {
@@ -70,7 +75,8 @@ function renderHour() {
   $('#dayAvg').textContent = n0(mean); $('#dayAvgCat').innerHTML = `<span class="band" style="background:${colOf(mean)}">${T('cat')[catI(mean)]}</span> µg/m³`;
   $('#cig').textContent = n1(mean / 22); $('#best').textContent = hh(hourOf(best)); $('#bestSub').textContent = `${n0(w.base[best])} µg/m³ · ${T('cat')[catI(w.base[best])]}`;
   $('#worst').textContent = hh(hourOf(worst)); $('#worstSub').textContent = `${T('upto', { v: n0(w.hi[worst]) })}`;
-  $('#chartH').textContent = T('chartH', { w: w.area });
+  $('#chartH').textContent = T('chartH', { w: w.area }); const inf = dayInfo(S.day);
+  $('#srcTag').textContent = inf.note === 'daily weather engine' ? T('srcWx', { r: (inf.gfs_run || '').replace('T', ' ') }) : T('srcComp');
   drawChart(); paintMap(); renderPlan(); drawCard(); if (S.lastDay !== S.day) { S.lastDay = S.day; renderMyDay(); renderRank(); }
 }
 
@@ -229,9 +235,12 @@ function alertMsg(m) { const t = $('#tip'); t.textContent = m; t.style.opacity =
 if ('speechSynthesis' in window) speechSynthesis.getVoices();
 
 /* ---------- trust ---------- */
-function renderTrust() { const v = D.validation.summary, h = v.holdout, o = v.oct26, p = Math.round(100 * (1 - h.rmse_blend / h.rmse_idw)), tr = T('trust');
+function renderTrust() { const v = D.validation.summary, h = v.holdout, o = v.oct26, p = Math.round(100 * (1 - h.rmse_blend / h.rmse_idw));
+  const fill = (str, vars) => Object.entries(vars).reduce((a, [x, y]) => a.replaceAll(`{${x}}`, y), str);
   const vals = [{}, { n: v.stations_modelled }, { p, a: h.rmse_blend, b: h.rmse_idw }, { s: o.stations, a: o.rmse_blend, b: o.rmse_idw }];
-  $('#trustGrid').innerHTML = tr.map(([k, d], i) => { let a = k, b = d; Object.entries(vals[i]).forEach(([x, y]) => { a = a.replaceAll(`{${x}}`, y); b = b.replaceAll(`{${x}}`, y); }); return `<div><b>${a}</b><p>${b}</p></div>`; }).join(''); }
+  const rows = T('trust').map(([k, d], i) => [fill(k, vals[i] || {}), fill(d, vals[i] || {})]), wx = D.validation.wx;   // copy: never mutate the I18N list
+  if (wx) rows.push([T('trustWxK', { p: Math.round(100 * (1 - wx.rmse_model / wx.rmse_clim)) }), T('trustWxD', { a: wx.rmse_model, b: wx.rmse_clim, c: wx.daily_corr_model })]);
+  $('#trustGrid').innerHTML = rows.map(([a, b]) => `<div><b>${a}</b><p>${b}</p></div>`).join(''); }
 
 /* ---------- share card ---------- */
 function drawCard() {
