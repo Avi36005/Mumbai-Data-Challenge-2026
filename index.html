@@ -45,6 +45,7 @@
       <div class="num"><span id="nowVal"></span><small>µg/m³</small></div>
       <div class="chip" id="nowCat"></div>
       <p id="nowLinger"></p>
+      <button class="btn ghost listen small" data-say="now"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button>
     </div>
   </div>
   <div class="scrub">
@@ -65,6 +66,22 @@
   <p class="sub" data-t="planSub">Tell us what you are doing. We find the cleanest time for it.</p>
   <div class="acts" id="acts" role="radiogroup"></div>
   <div class="answer" id="answer" aria-live="polite"></div>
+  <button class="btn ghost listen" data-say="plan"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button>
+</section>
+
+<section id="myday" class="card" aria-labelledby="mydayH">
+  <div class="head-row"><h2 id="mydayH" data-t="mydayH">My day, less smoke</h2><button class="btn ghost listen" data-say="myday"><span aria-hidden="true">🔊</span> <span data-t="listen">Listen</span></button></div>
+  <p class="sub" data-t="mydaySub">Tell us your routine. We count how much PM2.5 you will breathe in outdoors tomorrow, and how to cut it.</p>
+  <div class="form-grid">
+    <label><span data-t="fHome">I live in</span><select id="fHome"></select></label>
+    <label><span data-t="fWork">I work or study in</span><select id="fWork"></select></label>
+    <label><span data-t="fGo">I leave for work at</span><select id="fGo" class="hsel"></select></label>
+    <label><span data-t="fBack">I come back at</span><select id="fBack" class="hsel"></select></label>
+    <label><span data-t="fEx">Exercise</span><select id="fEx"><option value="none" data-t="exNone">None</option><option value="walk" data-t="exWalk">Walk (1 hour)</option><option value="run" data-t="exRun">Run or gym outdoors (1 hour)</option></select></label>
+    <label><span data-t="fExAt">Exercise at</span><select id="fExAt" class="hsel"></select></label>
+    <label><span data-t="fKids">Children play outside at</span><select id="fKids" class="hsel nonable"></select></label>
+  </div>
+  <div class="dose" id="dose" aria-live="polite"></div>
 </section>
 
 <section class="card" aria-labelledby="mapH">
@@ -80,6 +97,13 @@
     </div>
   </div>
   <div class="legend" id="legend"></div>
+</section>
+
+<section id="bmc" class="card" aria-labelledby="bmcH">
+  <div class="head-row"><h2 id="bmcH" data-t="bmcH">For BMC: where to send the squads tonight</h2><button class="btn ghost" id="bmcCsv" data-t="csv">Download list (CSV)</button></div>
+  <p class="sub" data-t="bmcSub">BMC runs 76 ward-level anti-pollution squads. This ranks wards by how many people will breathe Moderate-or-worse air tonight (20:00 to 06:00) if festival smoke lingers.</p>
+  <ol class="rank" id="rank"></ol>
+  <p class="hint" data-t="bmcNote">Score = people in the ward × hours × µg/m³ above 60 (CPCB Moderate), using the smoky-nights forecast. A planning aid, not an official advisory.</p>
 </section>
 
 <section class="card share" aria-labelledby="shareH">

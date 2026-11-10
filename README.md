@@ -15,6 +15,9 @@ Air-quality apps usually show one number for one station. AirPulse turns a forec
 | **Plan my day** | Choose walk, run, kids playing, commute, elderly / heart-lung, or outdoor work. It finds the cleanest hour, the hour to avoid, and plain advice |
 | **Cigarette equivalent** | The day's air as cigarettes (Berkeley Earth rule of thumb: 22 µg/m³ over 24 h ≈ 1 cigarette) |
 | **The whole city** | All 24 wards coloured hour by hour, with how many people and school students are in Moderate-or-worse air |
+| **My day, less smoke** | Enter home ward, work ward, commute times, exercise and children's outdoor time. It counts the PM2.5 you breathe in outdoors (µg, using US EPA breathing rates) and finds a cleaner plan: e.g. 250 → 200 µg (−20%) by walking at 16:00 instead of 06:00 |
+| **🔊 Listen** | Reads the forecast and advice aloud in English, Hindi or Marathi (the device's built-in Google / system voices), for elderly users and anyone who prefers listening |
+| **For BMC: where to send the squads tonight** | Ranks the 24 wards by people × hours × µg/m³ above the CPCB Moderate line for tonight, with peak hour and schools; downloadable as CSV for the 76 ward-level squads |
 | **Share** | A ready-made picture for WhatsApp in your language |
 | **Why trust this?** | How the forecast was made and tested, linking to the full evidence dashboard (`/evidence`) |
 

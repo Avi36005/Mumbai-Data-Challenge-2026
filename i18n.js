@@ -1,6 +1,15 @@
 /* UI text in English, Hindi and Marathi. Hindi and Marathi are drafts: a native speaker should review them before wide sharing. */
 window.I18N = {
 en: {
+  mydayH: 'My day, less smoke', mydaySub: 'Tell us your routine. We count how much PM2.5 you will breathe in outdoors tomorrow, and how to cut it.', listen: 'Listen',
+  fHome: 'I live in', fWork: 'I work or study in', fGo: 'I leave for work at', fBack: 'I come back at', fEx: 'Exercise', fExAt: 'Exercise at', fKids: 'Children play outside at',
+  exNone: 'None', exWalk: 'Walk (1 hour)', exRun: 'Run or gym outdoors (1 hour)', noWork: 'I stay in my area', noTime: 'Not today',
+  mdEmpty: 'Add at least one outdoor activity above.', mdNow: 'You breathe in outdoors, {d}', mdBest: 'With the cleaner times below', mdSave: 'less PM2.5 in your lungs', mdAlready: 'Your plan already uses the cleanest times',
+  mdYour: 'Your plan', mdBetter: 'Cleaner plan', mdTip: '{what}: {from} → {to}', mdAct: { commute: 'Commute', commuteGo: 'Leave for work', commuteBack: 'Come back', walk: 'Walk', run: 'Exercise', kids: 'Children outdoors' },
+  mdNote: 'µg = micrograms of PM2.5 breathed in during these outdoor hours, using the smoky-nights forecast and US EPA breathing rates (walk 1.56, run 2.94, commute 0.72 m³ per hour). Commute uses the average of home and work wards. Office times move by at most one hour.',
+  bmcH: 'For BMC: where to send the squads tonight', bmcSub: 'BMC runs 76 ward-level anti-pollution squads. This ranks wards by how many people will breathe Moderate-or-worse air tonight (20:00 to 06:00) if festival smoke lingers.', csv: 'Download list (CSV)',
+  bmcNote: 'Score = people in the ward × hours × µg/m³ above 60 (CPCB Moderate), using the smoky-nights forecast. A planning aid, not an official advisory.', lakh: 'lakh people', schoolsW: 'schools', peakAt: 'peak {t} ({v})',
+  noVoice: 'Your browser cannot read aloud.', sayNow: '{a}. {t}. Air: {v} micrograms, {c}.',
   upto: 'up to {v} if smoke lingers', expPeak: 'Worst moment: {t}, when {p} lakh people and {s} lakh school students could be in Moderate or worse air if Diwali smoke lingers.', show: 'Show it',
   skip: 'Skip to planning', where: 'Where are you?', pickArea: 'Pick your area', locate: 'Use my location',
   locating: 'Finding you…', locFound: 'Nearest ward: {w}', locFar: 'You seem to be outside Mumbai, so we picked the nearest ward: {w}', locErr: 'Could not get your location. Pick your area from the list.',
@@ -36,6 +45,15 @@ en: {
   cardTitle: 'Air in {w}', cardBest: 'Best time to go out', cardAvoid: 'Avoid', cardCig: '≈ {n} cigarettes', cardFoot: 'AirPulse Mumbai · forecast for {d}'
 },
 hi: {
+  mydayH: 'मेरा दिन, कम धुआँ', mydaySub: 'अपनी दिनचर्या बताइए। हम गिनेंगे कि कल बाहर आप कितना PM2.5 साँस में लेंगे, और उसे कैसे घटाएँ।', listen: 'सुनें',
+  fHome: 'मैं रहता/रहती हूँ', fWork: 'मैं काम/पढ़ाई करता/करती हूँ', fGo: 'काम के लिए निकलता/निकलती हूँ', fBack: 'वापस आता/आती हूँ', fEx: 'कसरत', fExAt: 'कसरत का समय', fKids: 'बच्चे बाहर खेलते हैं',
+  exNone: 'नहीं', exWalk: 'सैर (1 घंटा)', exRun: 'दौड़ या बाहर कसरत (1 घंटा)', noWork: 'मैं अपने इलाके में ही रहता/रहती हूँ', noTime: 'आज नहीं',
+  mdEmpty: 'ऊपर कम से कम एक बाहर की गतिविधि जोड़ें।', mdNow: '{d} को आप बाहर साँस में लेंगे', mdBest: 'नीचे दिए साफ़ समय के साथ', mdSave: 'फेफड़ों में कम PM2.5', mdAlready: 'आपका प्लान पहले से सबसे साफ़ समय पर है',
+  mdYour: 'आपका प्लान', mdBetter: 'साफ़ प्लान', mdTip: '{what}: {from} → {to}', mdAct: { commute: 'आना-जाना', commuteGo: 'काम पर निकलना', commuteBack: 'वापस आना', walk: 'सैर', run: 'कसरत', kids: 'बच्चों का बाहर खेलना' },
+  mdNote: 'µg = इन बाहर के घंटों में साँस में गया PM2.5 (माइक्रोग्राम), धुआँ रुकने वाले पूर्वानुमान और US EPA की साँस दर से (सैर 1.56, दौड़ 2.94, आना-जाना 0.72 m³ प्रति घंटा)। ऑफ़िस का समय अधिकतम एक घंटा बदला गया।',
+  bmcH: 'BMC के लिए: आज रात दस्ते कहाँ भेजें', bmcSub: 'BMC के 76 वार्ड-स्तरीय प्रदूषण-रोधी दस्ते हैं। यह सूची बताती है कि आज रात (20:00 से 06:00) धुआँ रुके तो किस वार्ड में सबसे ज़्यादा लोग मध्यम या खराब हवा में साँस लेंगे।', csv: 'सूची डाउनलोड करें (CSV)',
+  bmcNote: 'स्कोर = वार्ड के लोग × घंटे × 60 से ऊपर µg/m³ (CPCB मध्यम)। योजना में मदद के लिए, आधिकारिक सलाह नहीं।', lakh: 'लाख लोग', schoolsW: 'स्कूल', peakAt: 'शिखर {t} ({v})',
+  noVoice: 'आपका ब्राउज़र पढ़कर नहीं सुना सकता।', sayNow: '{a}। {t}। हवा: {v} माइक्रोग्राम, {c}।',
   upto: 'धुआँ रुके तो {v} तक', expPeak: 'सबसे खराब समय: {t}, जब दिवाली का धुआँ रुके तो {p} लाख लोग और {s} लाख स्कूली छात्र मध्यम या खराब हवा में हो सकते हैं।', show: 'दिखाएँ',
   skip: 'योजना पर जाएँ', where: 'आप कहाँ हैं?', pickArea: 'अपना इलाका चुनें', locate: 'मेरी लोकेशन लें',
   locating: 'आपको ढूँढ रहे हैं…', locFound: 'सबसे पास का वार्ड: {w}', locFar: 'आप मुंबई के बाहर लगते हैं, इसलिए सबसे पास का वार्ड चुना: {w}', locErr: 'लोकेशन नहीं मिली। सूची से अपना इलाका चुनें।',
@@ -71,6 +89,15 @@ hi: {
   cardTitle: '{w} की हवा', cardBest: 'बाहर जाने का सबसे अच्छा समय', cardAvoid: 'इस समय से बचें', cardCig: '≈ {n} सिगरेट', cardFoot: 'AirPulse Mumbai · {d} का पूर्वानुमान'
 },
 mr: {
+  mydayH: 'माझा दिवस, कमी धूर', mydaySub: 'तुमची दिनचर्या सांगा. उद्या बाहेर तुम्ही किती PM2.5 श्वासात घ्याल आणि ते कसे कमी करायचे, ते आम्ही मोजू.', listen: 'ऐका',
+  fHome: 'मी राहतो/राहते', fWork: 'मी काम/शिक्षण करतो/करते', fGo: 'कामाला निघतो/निघते', fBack: 'परत येतो/येते', fEx: 'व्यायाम', fExAt: 'व्यायामाची वेळ', fKids: 'मुले बाहेर खेळतात',
+  exNone: 'नाही', exWalk: 'फिरणे (1 तास)', exRun: 'धावणे किंवा बाहेर व्यायाम (1 तास)', noWork: 'मी माझ्याच भागात असतो/असते', noTime: 'आज नाही',
+  mdEmpty: 'वर किमान एक बाहेरची कृती जोडा.', mdNow: '{d} रोजी तुम्ही बाहेर श्वासात घ्याल', mdBest: 'खालील स्वच्छ वेळा वापरल्यास', mdSave: 'फुफ्फुसात कमी PM2.5', mdAlready: 'तुमचा प्लॅन आधीच सर्वात स्वच्छ वेळेत आहे',
+  mdYour: 'तुमचा प्लॅन', mdBetter: 'स्वच्छ प्लॅन', mdTip: '{what}: {from} → {to}', mdAct: { commute: 'प्रवास', commuteGo: 'कामाला निघणे', commuteBack: 'परत येणे', walk: 'फिरणे', run: 'व्यायाम', kids: 'मुलांचे बाहेर खेळणे' },
+  mdNote: 'µg = या बाहेरच्या तासांत श्वासात गेलेले PM2.5 (मायक्रोग्रॅम), धूर टिकण्याच्या अंदाजानुसार आणि US EPA श्वसन दराने (फिरणे 1.56, धावणे 2.94, प्रवास 0.72 m³ प्रति तास). ऑफिसची वेळ जास्तीत जास्त एक तास बदलली.',
+  bmcH: 'BMC साठी: आज रात्री पथके कुठे पाठवायची', bmcSub: 'BMC ची 76 वॉर्ड-स्तरीय प्रदूषणविरोधी पथके आहेत. आज रात्री (20:00 ते 06:00) धूर टिकल्यास कोणत्या वॉर्डात सर्वाधिक लोक मध्यम किंवा वाईट हवा श्वासात घेतील, त्यानुसार ही यादी.', csv: 'यादी डाउनलोड करा (CSV)',
+  bmcNote: 'गुण = वॉर्डमधील लोक × तास × 60 पेक्षा जास्त µg/m³ (CPCB मध्यम). नियोजनासाठी मदत, अधिकृत सूचना नाही.', lakh: 'लाख लोक', schoolsW: 'शाळा', peakAt: 'शिखर {t} ({v})',
+  noVoice: 'तुमचा ब्राउझर वाचून दाखवू शकत नाही.', sayNow: '{a}. {t}. हवा: {v} मायक्रोग्रॅम, {c}.',
   upto: 'धूर टिकल्यास {v} पर्यंत', expPeak: 'सर्वात वाईट वेळ: {t}, दिवाळीचा धूर टिकल्यास {p} लाख लोक आणि {s} लाख शालेय विद्यार्थी मध्यम किंवा वाईट हवेत असू शकतात.', show: 'दाखवा',
   skip: 'नियोजनाकडे जा', where: 'तुम्ही कुठे आहात?', pickArea: 'तुमचा भाग निवडा', locate: 'माझे ठिकाण वापरा',
   locating: 'तुम्हाला शोधत आहोत…', locFound: 'सर्वात जवळचा वॉर्ड: {w}', locFar: 'तुम्ही मुंबईबाहेर दिसता, म्हणून सर्वात जवळचा वॉर्ड निवडला: {w}', locErr: 'ठिकाण मिळाले नाही. यादीतून तुमचा भाग निवडा.',

@@ -33,7 +33,8 @@ fetch('data/city.json').then(r => r.json()).then(c => { D = c; return fetch('dat
 function init() {
   if (!D.wards.some(w => w.id === S.ward)) S.ward = 'GN';
   const now = new Date(), idx = D.hours.findIndex(h => Math.abs(new Date(h + ':00+05:30') - now) < 1800e3);
-  S.hour = idx >= 0 ? idx : 8; S.day = S.hour >= 24 ? 1 : 0;
+  const qh = new URLSearchParams(location.search).get('hour');
+  S.hour = qh != null && +qh >= 0 && +qh < 48 ? +qh : idx >= 0 ? idx : 8; S.day = S.hour >= 24 ? 1 : 0;
   $('#ward').innerHTML = D.wards.slice().sort((a, b) => a.area.localeCompare(b.area)).map(w => `<option value="${w.id}">${w.area} (${w.ward})</option>`).join('');
   $('#ward').onchange = e => { S.ward = e.target.value; save(); renderAll(); };
   $('#locate').onclick = locate;
@@ -41,13 +42,14 @@ function init() {
   $('#play').onclick = play;
   $$('.langs button').forEach(b => b.onclick = () => { lang = b.dataset.lang; save(); applyLang(); renderAll(); });
   $('#shareBtn').onclick = () => shareCard(false); $('#dlBtn').onclick = () => shareCard(true);
-  buildSky(); buildMap(); applyLang(); renderAll();
+  buildSky(); buildMap(); initMyDay(); applyLang(); renderAll();
+  $$('.listen').forEach(b => b.onclick = () => speak(b.dataset.say, b)); $('#bmcCsv').onclick = rankCsv;
 }
 function applyLang() {
   document.documentElement.lang = lang; $$('.langs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
   $$('[data-t]').forEach(el => el.textContent = T(el.dataset.t)); $('#sources').textContent = T('sources');
 }
-function renderAll() { $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); }
+function renderAll() { $('#ward').value = S.ward; renderDays(); renderHour(); renderActs(); renderTrust(); fillMyDaySelects(); renderMyDay(); }
 
 /* ---------- now card ---------- */
 function renderDays() {
@@ -66,7 +68,7 @@ function renderHour() {
   $('#ribbon').innerHTML = w.base.map((b, k) => `<i style="background:${colOf(b)}" class="${k === i ? 'on' : ''}" data-k="${k}" title="${dayLabel(k)} ${hh(hourOf(k))}: ${n0(b)}"></i>`).join('');
   $$('#ribbon i').forEach(el => el.onclick = () => { S.hour = +el.dataset.k; S.day = S.hour >= 24 ? 1 : 0; renderHour(); });
   $('#ticks').innerHTML = [0, 6, 12, 18, 24, 30, 36, 42].map(k => `<span style="left:${100 * k / 47}%">${k % 24 === 0 ? dayLabel(k).split(' ').slice(0, 2).join(' ') : hh(hourOf(k))}</span>`).join('');
-  paintSky(hourOf(i), v); paintMap(); renderPlan(); drawCard();
+  paintSky(hourOf(i), v); paintMap(); renderPlan(); drawCard(); if (S.lastDay !== S.day) { S.lastDay = S.day; renderMyDay(); renderRank(); }
 }
 
 /* ---------- skyline ---------- */
@@ -142,6 +144,82 @@ function locate() {
     D.wards.forEach(w => { const d = Math.hypot((w.lat - la) * 111, (w.lon - lo) * 105); if (d < bd) { bd = d; best = w; } });
     S.ward = best.id; save(); renderAll(); $('#locMsg').textContent = T(bd > 25 ? 'locFar' : 'locFound', { w: best.area }); }, () => { $('#locMsg').textContent = T('locErr'); }, { timeout: 10000 });
 }
+
+/* ---------- my day, less smoke ---------- */
+// Inhalation rates, adults (US EPA Exposure Factors Handbook 2011, Table 6-2): light 0.72, moderate 1.56, high 2.94 m3/h.
+const RATE = { commute: .72, walk: 1.56, run: 2.94, kids: 1.56 };
+const MD = { home: null, work: null, go: 9, back: 18, ex: 'walk', exAt: 6, kids: 17 };
+try { Object.assign(MD, JSON.parse(localStorage.getItem('airpulse-myday') || '{}')); } catch (e) {}
+const saveMD = () => { try { localStorage.setItem('airpulse-myday', JSON.stringify(MD)); } catch (e) {} };
+function initMyDay() {
+  ['fHome', 'fWork', 'fGo', 'fBack', 'fEx', 'fExAt', 'fKids'].forEach(id => $('#' + id).onchange = e => { const k = { fHome: 'home', fWork: 'work', fGo: 'go', fBack: 'back', fEx: 'ex', fExAt: 'exAt', fKids: 'kids' }[id];
+    MD[k] = ['go', 'back', 'exAt', 'kids'].includes(k) ? (e.target.value === 'none' ? null : +e.target.value) : e.target.value; saveMD(); renderMyDay(); });
+}
+function fillMyDaySelects() {
+  const opts = D.wards.slice().sort((a, b) => a.area.localeCompare(b.area)).map(w => `<option value="${w.id}">${w.area}</option>`).join('');
+  $('#fHome').innerHTML = opts; $('#fWork').innerHTML = `<option value="none">${T('noWork')}</option>` + opts;
+  $$('.hsel').forEach(el => el.innerHTML = (el.classList.contains('nonable') || el.id === 'fGo' || el.id === 'fBack' ? `<option value="none">${T('noTime')}</option>` : '') + [...Array(24)].map((_, h) => `<option value="${h}">${hh(h)}</option>`).join(''));
+  MD.home = MD.home || S.ward; MD.work = MD.work || 'none';
+  $('#fHome').value = MD.home; $('#fWork').value = MD.work; $('#fGo').value = MD.go ?? 'none'; $('#fBack').value = MD.back ?? 'none'; $('#fEx').value = MD.ex; $('#fExAt').value = MD.exAt ?? 6; $('#fKids').value = MD.kids ?? 'none';
+  $$('#fEx option').forEach(o => o.textContent = T(o.dataset.t));
+}
+function planDose(plan, d) {
+  const H = D.wards.find(w => w.id === plan.home), Wk = plan.work && plan.work !== 'none' ? D.wards.find(w => w.id === plan.work) : H;
+  const pm = (w, h) => w.hi[d * 24 + h], items = [];
+  if (plan.go != null) items.push({ k: 'commute', h: plan.go, v: (pm(H, plan.go) + pm(Wk, plan.go)) / 2 });
+  if (plan.back != null) items.push({ k: 'commute', h: plan.back, v: (pm(H, plan.back) + pm(Wk, plan.back)) / 2 });
+  if (plan.ex !== 'none' && plan.exAt != null) items.push({ k: plan.ex, h: plan.exAt, v: pm(H, plan.exAt) });
+  if (plan.kids != null) items.push({ k: 'kids', h: plan.kids, v: pm(H, plan.kids) });
+  items.forEach(it => it.dose = it.v * RATE[it.k]); return { items, total: items.reduce((s, it) => s + it.dose, 0) };
+}
+function bestPlan(d) {
+  const H = D.wards.find(w => w.id === MD.home), b = { ...MD }, pm = h => H.hi[d * 24 + h], arg = hs => hs.reduce((a, h) => pm(h) < pm(a) ? h : a, hs[0]);
+  if (b.ex !== 'none' && b.exAt != null) b.exAt = arg([5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21]);
+  if (b.kids != null) b.kids = arg([15, 16, 17, 18, 19]);
+  for (const key of ['go', 'back']) { if (b[key] == null) continue;   // office hours: move by at most one hour
+    const opts = [b[key] - 1, b[key], b[key] + 1].filter(x => x >= 0 && x < 24);
+    b[key] = opts.reduce((best, x) => planDose({ ...b, [key]: x }, d).total < planDose({ ...b, [key]: best }, d).total ? x : best, b[key]); }
+  return b;
+}
+function renderMyDay() {
+  if (!D || !MD.home) return; const d = S.day, now = planDose(MD, d), bp = bestPlan(d), best = planDose(bp, d), el = $('#dose');
+  if (!now.items.length) { el.innerHTML = `<p class="hint">${T('mdEmpty')}</p>`; return; }
+  const pct = Math.round(100 * (1 - best.total / now.total)), lab = k => T('mdAct.' + k);
+  const row = (pl, title) => { const on = Object.fromEntries(pl.items.map(it => [it.h, it])); return `<span>${title}</span><div class="row">${[...Array(24)].map((_, h) => { const it = on[h], w = D.wards.find(x => x.id === MD.home);
+    return `<i style="background:${colOf(w.hi[d * 24 + h])}" class="${it ? 'on' : ''}" title="${hh(h)}${it ? ' · ' + lab(it.k) : ''}">${it ? `<em>${({ commute: '🚆', walk: '🚶', run: '🏃', kids: '⚽' })[it.k]}</em>` : ''}</i>`; }).join('')}</div>`; };
+  const tips = []; const cmp = (k, a, b) => { if (a !== b && a != null) tips.push(T('mdTip', { what: lab(k), from: hh(a), to: hh(b) })); };
+  cmp(MD.ex === 'none' ? 'walk' : MD.ex, MD.ex !== 'none' ? MD.exAt : null, bp.exAt); cmp('kids', MD.kids, bp.kids); cmp('commuteGo', MD.go, bp.go); cmp('commuteBack', MD.back, bp.back);
+  el.innerHTML = `<div class="dose-top"><div><b>${n0(now.total)} µg</b><span>${T('mdNow', { d: dayLabel(d * 24) })}</span></div><div><b>${n0(best.total)} µg</b><span>${T('mdBest')}</span></div><div class="save"><b>${pct > 0 ? '−' + pct + '%' : '0%'}</b><span>${pct > 0 ? T('mdSave') : T('mdAlready')}</span></div></div>
+    <div class="tl">${row(now, T('mdYour'))}${row(best, T('mdBetter'))}<span></span><div class="hrs">${[...Array(24)].map((_, h) => `<span>${h % 6 === 0 ? hh(h) : ''}</span>`).join('')}</div></div>
+    ${tips.length ? `<ul class="tips">${tips.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}<p class="hint">${T('mdNote')}</p>`;
+  el.dataset.say = [T('mdNow', { d: dayLabel(d * 24) }) + ': ' + n0(now.total) + ' µg.', pct > 0 ? T('mdSave') + ': ' + pct + '%.' : T('mdAlready'), ...tips].join(' ');
+}
+
+/* ---------- BMC squad planner ---------- */
+function nightIdx(d) { return [...Array(24)].map((_, h) => d * 24 + h).filter(k => hourOf(k) <= 6 || hourOf(k) >= 20); }
+function rankRows() { const ks = nightIdx(S.day);
+  return D.wards.map(w => { const ex = ks.reduce((s, k) => s + Math.max(0, w.hi[k] - 60), 0), pk = ks.reduce((a, k) => w.hi[k] > w.hi[a] ? k : a, ks[0]);
+    return { w, score: w.pop * ex / 1e6, peak: pk, hours: ks.filter(k => w.hi[k] > 60).length }; }).sort((a, b) => b.score - a.score); }
+function renderRank() { const r = rankRows(), mx = r[0].score || 1;
+  $('#rank').innerHTML = r.slice(0, 10).map((x, i) => `<li><span class="no">${i + 1}</span><span><b>${x.w.area}</b><br><span class="meta">${x.w.ward} · ${(x.w.pop / 1e5).toFixed(1)} ${T('lakh')} · ${x.w.schools} ${T('schoolsW')}</span></span><span class="bar" style="width:${Math.max(4, 100 * x.score / mx)}%"></span><span class="meta">${T('peakAt', { t: hh(hourOf(x.peak)), v: n0(x.w.hi[x.peak]) })} · ${x.hours} h</span></li>`).join(''); }
+function rankCsv() { const rows = [['rank', 'ward', 'area', 'population', 'schools', 'students', 'hours_above_60', 'peak_hour', 'peak_pm25', 'score']].concat(rankRows().map((x, i) => [i + 1, x.w.ward, x.w.area, x.w.pop, x.w.schools, x.w.students, x.hours, D.hours[x.peak], n0(x.w.hi[x.peak]), x.score.toFixed(1)]));
+  const b = new Blob([rows.map(r => r.map(c => `"${String(c).replaceAll('"', '""')}"`).join(',')).join('\n')], { type: 'text/csv' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `airpulse-bmc-priority-${S.day ? '12' : '11'}nov.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+
+/* ---------- listen (Web Speech API; uses the device's Google / system voices) ---------- */
+function speak(what, btn) {
+  if (!('speechSynthesis' in window)) { alertMsg(T('noVoice')); return; } const ss = window.speechSynthesis;
+  if (ss.speaking) { ss.cancel(); $$('.listen').forEach(b => b.classList.remove('speaking')); return; }
+  const w = W(), i = S.hour; let text = '';
+  if (what === 'now') text = T('sayNow', { a: w.area, t: `${dayLabel(i)}, ${hh(hourOf(i))}`, v: n0(w.base[i]), c: T('cat')[catI(w.base[i])] });
+  if (what === 'plan') text = $('#answer').innerText.replace(/\s+/g, ' ');
+  if (what === 'myday') text = $('#dose').dataset.say || '';
+  const want = { en: ['en-IN', 'en-GB', 'en'], hi: ['hi-IN'], mr: ['mr-IN', 'hi-IN'] }[lang], vs = ss.getVoices();
+  const v = want.map(l => vs.find(x => x.lang.replace('_', '-').toLowerCase().startsWith(l.toLowerCase()))).find(Boolean);
+  const u = new SpeechSynthesisUtterance(text); u.lang = v ? v.lang : want[0]; if (v) u.voice = v; u.rate = .92;
+  u.onend = u.onerror = () => btn.classList.remove('speaking'); btn.classList.add('speaking'); ss.speak(u);
+}
+function alertMsg(m) { const t = $('#tip'); t.textContent = m; t.style.opacity = 1; t.style.left = '20px'; t.style.top = '80px'; setTimeout(() => t.style.opacity = 0, 3000); }
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
 
 /* ---------- trust ---------- */
 function renderTrust() { const v = D.validation.summary, h = v.holdout, o = v.oct26, p = Math.round(100 * (1 - h.rmse_blend / h.rmse_idw)), tr = T('trust');
