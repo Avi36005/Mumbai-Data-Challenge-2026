@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mumbai AirPulse</title>
+<meta name="description" content="Mumbai AirPulse: an honest PM2.5 forecast for four Mumbai stations, with what the model knows, how good it really is, the Diwali lens, weather drivers and data health.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="airpulse.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <a class="brand" href="#hero"><span class="brand-dot"></span>Mumbai <em>AirPulse</em></a>
+  <nav>
+    <a href="#forecast">Forecast</a><a href="#knows">What it knows</a><a href="#skill">How good</a><a href="#festival">Diwali lens</a><a href="#weather">Weather</a><a href="#health">Data health</a><a href="#method">Method</a>
+  </nav>
+  <button class="theme" id="themeBtn" aria-label="Toggle light or dark theme">◐</button>
+</header>
+
+<main>
+<section id="hero" class="hero">
+  <div class="hero-copy reveal">
+    <p class="kicker">Four stations · hourly PM2.5 · 48-hour outlook</p>
+    <h1>The air over Mumbai,<br><span class="accent">honestly forecast.</span></h1>
+    <p class="lede">A forecast is only useful if you know how far to trust it. AirPulse shows the 11–12 November PM2.5 outlook for four official stations, <strong>together with</strong> what the model could actually see, how often it has been right, and where the data itself is weak. It also tells you the cleanest hours to be outdoors.</p>
+    <div class="hero-meta" id="heroMeta"></div>
+  </div>
+  <div class="hero-map reveal" style="--d:.15s"><div id="map" role="img" aria-label="Map of the four Mumbai stations"></div><div class="map-legend" id="mapLegend"></div></div>
+  <div class="pulses" id="pulses"></div>
+  <div class="summary" id="summary" aria-label="The next two days in brief"></div>
+</section>
+
+<section id="forecast" class="panel">
+  <div class="panel-head reveal"><span class="num">01</span><h2>The outlook</h2><p id="forecastIntro"></p></div>
+  <div class="station-tabs" id="fcTabs" role="tablist"></div>
+  <div class="chart-card reveal"><svg id="fcChart" class="chart" role="img" aria-label="Forecast chart"></svg><div class="chart-legend" id="fcLegend"></div></div>
+  <div class="callouts" id="fcCallouts"></div>
+  <div class="chart-card reveal ribbon" id="fcRibbon"></div>
+</section>
+
+<section id="knows" class="panel">
+  <div class="panel-head reveal"><span class="num">02</span><h2>What the model actually knows</h2>
+  <p>The newest readings before this forecast were taken on fireworks nights, with hours above 500 µg/m³. Fed in raw, they would be mistaken for the new normal. So festival readings are kept, but capped at 1.25× each station’s usual level. Here is exactly what the model saw, and what it did not.</p></div>
+  <div class="timeline-card reveal"><svg id="knowChart" class="chart" role="img" aria-label="Information timeline"></svg></div>
+  <div class="facts" id="knowFacts"></div>
+</section>
+
+<section id="skill" class="panel">
+  <div class="panel-head reveal"><span class="num">03</span><h2>How good is it, really?</h2>
+  <p>Every forecast method here was re-run on 28 historical windows <em>as if</em> it were the day before, using only data available then. We compare against an honest baseline: the recent level plus the usual daily cycle.</p></div>
+  <div class="route-tabs" id="routeTabs"></div>
+  <div class="skill-grid">
+    <div class="chart-card reveal"><svg id="skillChart" class="chart" role="img" aria-label="Per-window error comparison"></svg><div class="chart-legend" id="skillLegend"></div></div>
+    <div class="stat-stack" id="skillStats"></div>
+  </div>
+  <div class="chart-card reveal"><h3 class="card-title">Would the smoky-nights file have helped at past Diwalis? <span class="tag">best of the two submitted files, RMSE µg/m³ · lower is better</span></h3><div id="diwaliTests"></div><p class="note">Each row re-runs the forecast as if it were two days after Lakshmi Puja in that year, using only data available then. The night curve applied to a year is always learned from the <em>other</em> years. Two honest limits: these are other Mumbai stations (except 2021), and it is only four Diwalis.</p></div>
+  <div class="chart-card reveal"><h3 class="card-title">Blind test: 5–6 November 2026 <span class="tag">forecast made before the answers existed</span></h3><svg id="unseenChart" class="chart short" role="img" aria-label="Unseen window chart"></svg><div class="chart-legend" id="unseenLegend"></div></div>
+</section>
+
+<section id="festival" class="panel">
+  <div class="panel-head reveal"><span class="num">04</span><h2>The Diwali lens</h2>
+  <p>Daily PM2.5 around Lakshmi Puja in four different years. Fireworks nights spike — but what happens <em>after</em> is what matters for a forecast, and it is not the same every year.</p></div>
+  <div class="chart-card reveal"><svg id="festChart" class="chart" role="img" aria-label="Diwali comparison"></svg><div class="chart-legend" id="festLegend"></div></div>
+  <div class="facts" id="festFacts"></div>
+  <div class="chart-card reveal"><h3 class="card-title">The night after: smoke outlasts the fireworks <span class="tag">hour by hour, three and four days after Lakshmi Puja</span></h3><svg id="nightChart" class="chart" role="img" aria-label="Hourly post-Diwali ratio"></svg><div class="chart-legend" id="nightLegend"></div></div>
+  <div class="facts" id="nightFacts"></div>
+</section>
+
+<section id="weather" class="panel">
+  <div class="panel-head reveal"><span class="num">05</span><h2>What the weather says</h2>
+  <p>Pollution builds when air is trapped: weak wind and a shallow mixing layer. <strong>Ventilation</strong> (wind × mixing height) is the single best summary — low ventilation nights are smoggy nights. Rain washes the air.</p></div>
+  <div class="station-tabs" id="wxTabs"></div>
+  <div class="chart-card reveal"><svg id="wxChart" class="chart" role="img" aria-label="Weather drivers"></svg><div class="chart-legend" id="wxLegend"></div></div>
+  <div class="callouts" id="wxCallouts"></div>
+</section>
+
+<section id="health" class="panel">
+  <div class="panel-head reveal"><span class="num">06</span><h2>Data health</h2>
+  <p>A forecast inherits every flaw of its sensors. Monthly coverage of each station since February 2025, plus gaps, stuck readings and impossible values.</p></div>
+  <div class="chart-card reveal"><svg id="healthChart" class="chart" role="img" aria-label="Monthly coverage heatmap"></svg><div class="chart-legend" id="healthLegend"></div></div>
+  <div class="health-cards" id="healthCards"></div>
+</section>
+
+<section id="method" class="panel method">
+  <div class="panel-head reveal"><span class="num">07</span><h2>How it works — and what didn’t</h2></div>
+  <div class="method-grid reveal">
+    <div><h3>The model</h3><p>Two gradient-boosted tree models (LightGBM) averaged: one anchored at the newest usable PM reading, one trained for the exact forecast lead with NOAA GFS weather as it was issued at the time. 28-window backtests, no peeking at the future. Every submitted file can be rebuilt byte-for-byte from the code.</p></div>
+    <div><h3>Two forecasts, not one</h3><p>The competition scores the better of two files, so we submitted two honest scenarios: the expected level, and the same forecast with nights lifted by the pattern seen after Diwali 2019 and 2024 (about 1.6× in the small hours of 11 Nov, 1.0× by day). On past Diwalis this pair was never worse than a flat ×1.15 lift and 7–10% better in dry years.</p></div>
+    <div><h3>Honest negatives</h3><p>Ideas that sounded good but lost on blind tests: a second weather run (−6.9% on 5–6 Nov), stretching the daily cycle (wins only 25% of windows), feeding in the raw post-fireworks readings (three times worse in a rain year), starting the forecast nine hours later (no gain), and a much higher second file (passed its test, failed a sanity check against every past Diwali). We keep what survives.</p></div>
+    <div><h3>Data</h3><p>Zindi Google Mumbai Data Challenge package (Train, AdditionalHistory) and NOAA GFS from the ClimateVerse catalogue. No other air-quality feeds. Built by team Kryptonite.</p></div>
+  </div>
+  <p class="foot" id="foot"></p>
+</section>
+</main>
+<div class="tooltip" id="tip" role="tooltip"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="airpulse.js"></script>
+</body>
+</html>

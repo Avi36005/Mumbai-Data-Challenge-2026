@@ -1,47 +1,57 @@
-# Mumbai AirPulse
+# AirPulse Mumbai
 
-**An honest PM2.5 forecast for four Mumbai stations: the outlook for 11–12 November 2026, plus how far to trust it.**
+**Tomorrow's air for every Mumbai ward: when to go out, who is exposed, and how far to trust it.**
 
-Built by team **Kryptonite** for the [Google Mumbai Data Challenge: Air Quality Mapping & Forecasting](https://zindi.africa) (Zindi, 2026), creative-submission category.
+Built by team **Kryptonite** for the Google Mumbai Data Challenge 2026 (Zindi), creative-submission category.
 
-Most air-quality apps show one number. AirPulse shows the forecast together with the evidence a reader needs to judge it: what the model could actually see, how often it has been right, what past Diwalis did, what the weather says, and where the sensors themselves are weak.
+Air-quality apps usually show one number for one station. AirPulse turns a forecast for four official stations into something every family in Mumbai can use: a forecast for all 24 BMC wards, a plan for your day, and a picture to send to the family WhatsApp group, in English, Hindi or Marathi.
 
-## What is on the page
+## What it does
 
-| Section | What it shows |
+| Feature | What you get |
 |---|---|
-| Summary | Worst hour, cleanest hour, most polluted station and rain outlook for the next two days, in plain language |
-| 01 Outlook | Hourly PM2.5 for 11–12 Nov per station, exactly as submitted to the competition: the expected forecast and a "smoky nights" version; best 3-hour window to be outdoors each day; an hour-by-hour ribbon on India's CPCB scale |
-| 02 What the model knows | The newest readings were fireworks nights. Festival readings are kept but capped at 1.25× each station's normal level; the page shows how many hours were capped and which readings were not used |
-| 03 How good, really | 28 historical windows re-run as if it were the day before, against an honest baseline (recent level + daily cycle); past-Diwali re-tests of the submitted pair, including the case that went against it; a blind test on 5–6 Nov |
-| 04 Diwali lens | Daily PM2.5 around Lakshmi Puja in 2019, 2024, 2025 and 2026, and the hour-by-hour "night after" curve: smoke outlasts the fireworks |
-| 05 Weather | NOAA GFS ventilation (wind × mixing height), wind and rain, with the forecast days shaded |
-| 06 Data health | Monthly coverage per station, outages, stuck sensors and impossible values |
-| 07 Method | The model, why there are two forecasts, and the ideas that failed blind tests |
+| **Where are you?** | Pick your area or tap "Use my location"; the nearest ward is chosen |
+| **The sky over Mumbai** | An animated skyline whose haze follows the hourly forecast; play through the next 48 hours |
+| **Plan my day** | Choose walk, run, kids playing, commute, elderly / heart-lung, or outdoor work. It finds the cleanest hour, the hour to avoid, and plain advice |
+| **Cigarette equivalent** | The day's air as cigarettes (Berkeley Earth rule of thumb: 22 µg/m³ over 24 h ≈ 1 cigarette) |
+| **The whole city** | All 24 wards coloured hour by hour, with how many people and school students are in Moderate-or-worse air |
+| **Share** | A ready-made picture for WhatsApp in your language |
+| **Why trust this?** | How the forecast was made and tested, linking to the full evidence dashboard (`/evidence`) |
 
-## Data
+Links can preselect language and ward: `?lang=hi&ward=ME`.
 
-- Zindi challenge package: `Train.csv` (hourly PM2.5, 4 stations, to 10 Nov 2026 09:00 IST), `AdditionalHistory` (Mumbai stations 2018–2020 and 2024).
-- NOAA GFS 1° forecasts via the NOAA Open Data Dissemination programme, as listed in the ClimateVerse catalogue.
-- No other air-quality feeds. Every forecast uses only data that existed before the forecast was made.
+## How it works
+
+1. **Four-station forecast.** Our competition model (LightGBM, trained with NOAA GFS weather as it was issued) forecasts the four official stations for 11–12 Nov 2026, exactly as submitted to the competition.
+2. **From 4 stations to 26.** A second model learned from 2024 data how 22 other Mumbai stations move with those four (ridge regression on the four stations plus time of day), blended 50/50 with a distance-weighted average. Tested two ways:
+   - hold-out (16 Nov – 31 Dec 2024, 21 stations): RMSE 24.3 µg/m³ vs 29.0 for the distance average alone;
+   - two years later (1–16 Oct 2026, 11 stations): 16.3 vs 16.9.
+3. **Wards.** Each ward takes the distance-weighted average of all 26 stations at its centre.
+4. **People.** Ward population from BMC prabhag data; school enrolment from UDISE+ 2024-25.
+
+## Data (all from the challenge package or the ClimateVerse catalogue)
+
+- Zindi challenge package: Train.csv, AdditionalHistory (XKDR 2024 Mumbai stations, other Mumbai stations Oct 2026)
+- NOAA GFS forecasts (ClimateVerse)
+- BMC administrative ward boundaries (ClimateVerse doi:10.71646/2DGEEJ)
+- BMC prabhag boundaries with population (doi:10.71646/EREDWQ)
+- UDISE+ 2024-25 school data (doi:10.71646/XJIY8W)
 
 ## Run locally
 
-It is a static site (HTML, CSS, JavaScript with D3 and Leaflet; no build step).
+Static site, no build step:
 
 ```
-python3 -m http.server 8765
-# open http://localhost:8765        add ?theme=dark for the dark theme
+python3 -m http.server 8766
+# open http://localhost:8766
 ```
 
-`data/*.json` is exported by `scripts/build_data.py` from the competition project (model outputs, backtests, the official data package and the GFS tables). That script runs inside the competition codebase, which is kept separately; this repository holds the finished dashboard.
-
-## Deploy
-
-`firebase.json` is included for Firebase Hosting (`firebase deploy --only hosting`). The site also works on any static host, including GitHub Pages.
+`scripts/build_city.py` and `scripts/build_data.py` produced `data/` and `evidence/data/` inside the competition codebase, which is kept separately.
 
 ## Honest limits
 
-- The post-Diwali level is the biggest unknown; past Diwalis behaved very differently (one year cleaner than before, two years dirtier).
-- The "smoky nights" curve comes from two dry years at other Mumbai stations. It is deliberately cautious.
-- Forecasts are for four stations, not the whole city.
+- The 22 extra stations are estimated from the four forecast stations; they are not forecast directly. Their data ends on 16 Oct 2026.
+- Ward values are interpolated between stations, so local hotspots can be missed.
+- Category labels use India's CPCB scale, which is defined for 24-hour averages; hourly colours are a guide.
+- Hindi and Marathi text should be reviewed by a native speaker.
+- Forecasts are estimates, not medical advice.
