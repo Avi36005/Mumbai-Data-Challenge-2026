@@ -4,6 +4,18 @@
 
 Built by team **Kryptonite** for the Google Mumbai Data Challenge 2026 (Zindi), creative-submission category.
 
+## 🔗 Live app: **https://airpulse-mumbai-2026.web.app**
+
+| Open directly in | Link |
+|---|---|
+| English | https://airpulse-mumbai-2026.web.app/?lang=en |
+| हिंदी (Hindi) | https://airpulse-mumbai-2026.web.app/?lang=hi |
+| मराठी (Marathi) | https://airpulse-mumbai-2026.web.app/?lang=mr |
+| A specific ward, e.g. Govandi · Mankhurd at 1 am | https://airpulse-mumbai-2026.web.app/?ward=ME&hour=1 |
+| Full evidence dashboard | https://airpulse-mumbai-2026.web.app/evidence/ |
+
+Works on any phone browser; no install, no sign-in.
+
 Air-quality apps usually show one number for one station. AirPulse turns a forecast for four official stations into something every family in Mumbai can use: a forecast for all 24 BMC wards, a plan for your day, and a picture to send to the family WhatsApp group, in English, Hindi or Marathi.
 
 ## What it does
@@ -22,6 +34,25 @@ Air-quality apps usually show one number for one station. AirPulse turns a forec
 | **Why trust this?** | How the forecast was made and tested, linking to the full evidence dashboard (`/evidence`) |
 
 Links can preselect language and ward: `?lang=hi&ward=ME`.
+
+## Google tools used, and how
+
+| Google tool | What we use it for | Where in this repo |
+|---|---|---|
+| **Firebase Hosting** | Serves the live app at `airpulse-mumbai-2026.web.app` over HTTPS on Google's global CDN; data files are cached for 5 minutes so a forecast refresh shows up quickly | `firebase.json`, `.firebaserc`; deployed with `firebase deploy --only hosting` |
+| **Google Cloud** | The Firebase project `airpulse-mumbai-2026` is a Google Cloud project; it is the home for the hosting and the next backend services | Firebase console → project `airpulse-mumbai-2026` |
+| **Google Fonts** | *DM Sans* for Latin text and *Noto Sans Devanagari* (Google's Noto family) so Hindi and Marathi render cleanly on every phone | `<link>` in `index.html` |
+| **Google text-to-speech voices** (Chrome and Android, through the Web Speech API) | The 🔊 **Listen** button reads the forecast, the advice and the personal plan aloud in English, Hindi or Marathi; on Android and Chrome these are Google's voices. Marathi falls back to Hindi when no Marathi voice is installed | `speak()` in `app.js` |
+
+The forecast itself comes from our competition model (LightGBM with NOAA GFS weather). The extra city data comes from the ClimateVerse catalogue: BMC wards and population, and UDISE+ schools.
+
+### Deploy it yourself
+
+```bash
+npm install -g firebase-tools        # or: npx firebase-tools ...
+firebase login
+firebase deploy --only hosting --project airpulse-mumbai-2026
+```
 
 ## How it works
 
