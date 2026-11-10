@@ -11,7 +11,7 @@ and the app simply does not show the brief. Standard library only.
 import json, os, re, sys, time, urllib.request
 from datetime import datetime, timedelta, timezone
 
-MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
+MODEL = os.environ.get('GEMINI_MODEL', '')   # empty: pick the newest Flash model this key can use
 KEY = os.environ.get('GEMINI_API_KEY', '').strip()
 from pathlib import Path
 D_ = Path(__file__).resolve().parents[1] / 'site' / 'data'
@@ -62,6 +62,21 @@ FACTS:
 """
 
 
+def pick_model():
+    """Ask the Gemini API which models this key can use; prefer the newest plain Flash model (text generation)."""
+    req = urllib.request.Request('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', headers={'x-goog-api-key': KEY})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        ms = json.load(r).get('models', [])
+    ok = [m['name'].split('/')[-1] for m in ms if 'generateContent' in m.get('supportedGenerationMethods', [])]
+    skip = ('lite', 'image', 'tts', 'live', 'audio', 'vision', 'embedding', 'thinking', 'learnlm', 'exp', 'preview')
+    flash = [n for n in ok if n.startswith('gemini') and 'flash' in n and not any(x in n for x in skip)]
+    ver = lambda n: tuple(int(x) for x in re.findall(r'\d+', n.split('flash')[0])) or (0,)
+    pool = flash or [n for n in ok if n.startswith('gemini') and 'flash' in n] or [n for n in ok if n.startswith('gemini')]
+    if not pool:
+        raise RuntimeError('no Gemini text model available for this key')
+    return max(pool, key=lambda n: (ver(n), -len(n)))
+
+
 def ask(f):
     body = {'contents': [{'parts': [{'text': PROMPT + json.dumps(f, ensure_ascii=False)}]}],
             'generationConfig': {'temperature': 0.2, 'responseMimeType': 'application/json',
@@ -100,6 +115,13 @@ def main():
     f = facts()
     if not f['days']:
         print('gemini brief: no complete day for today or tomorrow, skipped'); return
+    global MODEL
+    if not MODEL:
+        try:
+            MODEL = pick_model()
+        except Exception as e:
+            print('gemini brief: could not list models:', str(e)[:200]); return
+    print('gemini brief: model', MODEL)
     for attempt in range(3):
         try:
             b = ask(f)
