@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-10T23:04Z",
+ "made": "2026-11-11T08:48Z",
  "for": [
   "2026-11-11",
   "2026-11-12"
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "On Wednesday 11 November, Mumbai forecast average PM2.5 is 48 (Satisfactory), cleanest at 15:00 (37). Most affected wards are Chembur, Borivali, Andheri East · Jogeshwari East. On Thursday 12 November, forecast average is 53 (Satisfactory), cleanest at 15:00 (44). Most affected wards are Chembur, Borivali, Govandi · Mankhurd.",
- "hi": "बुधवार 11 November को Mumbai का पूर्वानुमानित औसत PM2.5 48 (Satisfactory) है, जो 15:00 बजे 37 पर सबसे साफ रहेगा। प्रभावित क्षेत्र Chembur, Borivali, Andheri East · Jogeshwari East हैं। गुरुवार 12 November को औसत 53 (Satisfactory) है, जो 15:00 बजे 44 रहेगा। प्रभावित क्षेत्र Chembur, Borivali, Govandi · Mankhurd हैं।",
- "mr": "बुधवार 11 November रोजी Mumbai चा अंदाज सरासरी PM2.5 48 (Satisfactory) आहे, 15:00 वाजता 37 सह सर्वात स्वच्छ. सर्वाधिक प्रभावित भाग Chembur, Borivali, Andheri East · Jogeshwari East आहेत. गुरुवार 12 November रोजी सरासरी 53 (Satisfactory) आहे, 15:00 वाजता 44 सह सर्वात स्वच्छ. प्रभावित भाग Chembur, Borivali, Govandi · Mankhurd आहेत."
+ "en": "In Mumbai, average PM2.5 is forecast at 48 (Satisfactory) on Wednesday 11 November and 53 (Satisfactory) on Thursday 12 November. Cleanest hour is 15:00. If smoke lingers, worst hour reaches 92 at 00:00 and 74 at 23:00. Most affected wards: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd.",
+ "hi": "मुंबई में PM2.5 का औसत बुधवार 11 नवंबर को 48 (संतोषजनक) और गुरुवार 12 नवंबर को 53 (संतोषजनक) रहेगा। सबसे साफ समय 15:00 है। धुआं रहने पर 00:00 बजे 92 और 23:00 बजे 74 रहेगा। प्रभावित वॉर्ड: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd.",
+ "mr": "मुंबईत PM2.5 ची सरासरी बुधवार 11 नोव्हेंबर रोजी 48 (समाधानकारक) आणि गुरुवार 12 नोव्हेंबर रोजी 53 (समाधानकारक) असेल। सर्वात स्वच्छ वेळ 15:00 आहे। धूर राहिल्यास 00:00 वाजता 92 आणि 23:00 वाजता 74 असेल। बाधित वॉर्ड: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd."
 }
