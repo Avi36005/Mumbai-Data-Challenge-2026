@@ -1,10 +1,10 @@
 # Mumbai AirPulse cloud backend: no laptop, no human.
-# Twice a day: newest NOAA GFS run -> weather engine -> 26 stations -> 24 wards -> 47 browser tests -> Firebase Hosting -> commit data here.
+# Every 3 hours (GitHub may delay or skip a scheduled run; frequent runs keep the app current): newest NOAA GFS run -> weather
+# engine -> 26 stations -> 24 wards -> Gemini brief -> browser tests -> Firebase Hosting -> commit data here.
 name: Daily forecast
 on:
   schedule:
-    - cron: '45 5 * * *'    # 11:15 IST (after the 00Z GFS run is published)
-    - cron: '0 18 * * *'    # 23:30 IST (after the 12Z run)
+    - cron: '15 */3 * * *'  # every 3 hours (02:45, 05:45, 08:45 ... IST); a new GFS run is picked up as soon as it is published
   workflow_dispatch: {}
 permissions:
   contents: write

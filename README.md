@@ -30,7 +30,7 @@ site/                      the published app (Firebase Hosting serves this folde
   sw.js manifest.webmanifest icon*      installable app, works offline
   data/                    city.json (forecast for 24 wards), status.json (last cloud run), brief.json (Gemini brief), wards.geo.json
   evidence/                the evidence dashboard (accuracy, Diwali lens, weather, data health)
-cloud/                     the twice-daily cloud job
+cloud/                     the cloud job (every 3 hours)
   cloud_update.py          NOAA GFS -> weather engine -> 26 stations -> 24 wards -> site/data/
   gemini_brief.py          daily brief by Google Gemini, every number checked
   wx_lgbm.txt transfer.json base_city.json store.csv requirements.txt   model, city transfer, fixed part, forecast history
@@ -39,7 +39,7 @@ scripts/                   one-off build and training scripts (run on the compet
   legacy/daily_update.sh   the earlier laptop updater, replaced by the cloud job
 tests/                     run.html (71 browser checks), phone.html (phone-sized preview)
 docs/                      architecture.svg and screenshots used in this README
-.github/workflows/         daily-forecast.yml: the cloud job (11:15 and 23:30 IST)
+.github/workflows/         daily-forecast.yml: the cloud job (every 3 hours)
 firebase.json .firebaserc  hosting settings (no-cache, public folder site/)
 .env.example               placeholder for local runs; real keys are GitHub Actions secrets, never files
 ```
@@ -103,7 +103,7 @@ The day tabs say *Today* and *Tomorrow*, and each day says whether it is measure
 
 ![AirPulse system architecture](docs/architecture.svg)
 
-The application updates itself in the cloud, from `.github/workflows/daily-forecast.yml` (GitHub Actions). It runs twice a day at 11:15 and 23:30 IST, after each new NOAA GFS run is published, and can also be started by hand.
+The application updates itself in the cloud, from `.github/workflows/daily-forecast.yml` (GitHub Actions). It runs every 3 hours and picks up each new NOAA GFS run (00Z and 12Z) as soon as it is published; frequent runs also cover for GitHub delaying or skipping a scheduled run (on 11 Nov the 11:15 run was skipped and the 23:30 run started 5 hours late, so we moved from twice a day to every 3 hours). It can also be started by hand.
 
 | Step | What runs | Where |
 |---|---|---|
@@ -143,7 +143,7 @@ The cloud job above makes the daily update. `scripts/legacy/daily_update.sh` is 
 
 ## Tests
 
-`tests/run.html` opens the app and clicks through every control. It checks 71 things:
+`tests/run.html` opens the app and clicks through every control. It checks 71 things (72 while a Gemini brief is current):
 
 | Group | Checks |
 |---|---|

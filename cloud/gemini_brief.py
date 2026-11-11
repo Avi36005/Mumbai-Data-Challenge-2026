@@ -54,7 +54,10 @@ Use ONLY the facts in the JSON below. Do not add any other number, date, place o
 beyond suggesting that children, elderly people and people with heart or lung conditions limit outdoor effort when the
 air is Moderate or worse. Plain sentences, no emoji, no hashtags, no markdown. At most 55 words per language.
 Write numbers with Western digits (0-9) in all three languages and times as HH:MM, exactly as in the facts.
-Keep ward names in English.
+Keep ward names in English. In Hindi and Marathi, write everything else in Hindi or Marathi words: weekday and month
+(e.g. Wednesday 11 November = बुधवार 11 नवंबर in Hindi, बुधवार 11 नोव्हेंबर in Marathi), the city (मुंबई), and the
+air category using these words: Good = अच्छी / चांगली, Satisfactory = संतोषजनक / समाधानकारक, Moderate = मध्यम / मध्यम,
+Poor = खराब / वाईट, Very poor = बहुत खराब / खूप वाईट, Severe = गंभीर / गंभीर (Hindi / Marathi).
 
 Return JSON with keys "en" (English), "hi" (Hindi, Devanagari) and "mr" (Marathi, Devanagari).
 
@@ -103,6 +106,8 @@ def check(f, b):
             return f'{lg}: not in Devanagari'
         if re.search(r'[\U0001F300-\U0001FAFF☀-➿]', t):
             return f'{lg}: emoji'
+        if lg != 'en' and re.search(r'\b(January|February|March|April|May|June|July|August|September|October|November|December|Good|Satisfactory|Moderate|Poor|Severe|Mumbai)\b', t):
+            return f'{lg}: English words left in'
         bad = [n for n in re.findall(r'\d+', t) if (n.lstrip('0') or '0') not in allowed]
         if bad:
             return f'{lg}: numbers not in the facts {bad}'

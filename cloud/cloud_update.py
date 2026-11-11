@@ -1,4 +1,4 @@
-"""AirPulse cloud updater: runs in GitHub Actions twice a day, with no laptop and no Zindi files.
+"""AirPulse cloud updater: runs in GitHub Actions every 3 hours, with no laptop and no Zindi files.
 
 1. Download the newest NOAA GFS runs (00Z / 12Z, 1 degree, forecast hours 6-81) from the public NOAA Open Data bucket on AWS and read
    the six weather fields at the four official stations (bilinear), exactly as tools/gfs_weather.py does for the competition.
