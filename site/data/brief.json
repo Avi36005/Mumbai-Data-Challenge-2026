@@ -1,30 +1,14 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-11T08:48Z",
+ "made": "2026-11-12T00:47Z",
  "for": [
-  "2026-11-11",
-  "2026-11-12"
+  "2026-11-12",
+  "2026-11-13"
  ],
  "facts": {
   "city": "Mumbai",
   "pollutant": "PM2.5 (µg/m³), CPCB categories",
   "days": [
-   {
-    "date": "2026-11-11",
-    "label": "Wednesday 11 November",
-    "city_average_ugm3": 48,
-    "city_average_category": "Satisfactory",
-    "cleanest_daytime_hour": "15:00",
-    "cleanest_hour_ugm3": 37,
-    "worst_hour": "00:00",
-    "worst_hour_ugm3_if_smoke_lingers": 92,
-    "most_affected_wards": [
-     "Chembur",
-     "Borivali",
-     "Andheri East · Jogeshwari East"
-    ],
-    "kind": "forecast"
-   },
    {
     "date": "2026-11-12",
     "label": "Thursday 12 November",
@@ -40,10 +24,26 @@
      "Govandi · Mankhurd"
     ],
     "kind": "forecast"
+   },
+   {
+    "date": "2026-11-13",
+    "label": "Friday 13 November",
+    "city_average_ugm3": 57,
+    "city_average_category": "Satisfactory",
+    "cleanest_daytime_hour": "14:00",
+    "cleanest_hour_ugm3": 45,
+    "worst_hour": "23:00",
+    "worst_hour_ugm3_if_smoke_lingers": 70,
+    "most_affected_wards": [
+     "Chembur",
+     "Govandi · Mankhurd",
+     "Ghatkopar · Vikhroli"
+    ],
+    "kind": "forecast"
    }
   ]
  },
- "en": "In Mumbai, average PM2.5 is forecast at 48 (Satisfactory) on Wednesday 11 November and 53 (Satisfactory) on Thursday 12 November. Cleanest hour is 15:00. If smoke lingers, worst hour reaches 92 at 00:00 and 74 at 23:00. Most affected wards: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd.",
- "hi": "मुंबई में PM2.5 का औसत बुधवार 11 नवंबर को 48 (संतोषजनक) और गुरुवार 12 नवंबर को 53 (संतोषजनक) रहेगा। सबसे साफ समय 15:00 है। धुआं रहने पर 00:00 बजे 92 और 23:00 बजे 74 रहेगा। प्रभावित वॉर्ड: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd.",
- "mr": "मुंबईत PM2.5 ची सरासरी बुधवार 11 नोव्हेंबर रोजी 48 (समाधानकारक) आणि गुरुवार 12 नोव्हेंबर रोजी 53 (समाधानकारक) असेल। सर्वात स्वच्छ वेळ 15:00 आहे। धूर राहिल्यास 00:00 वाजता 92 आणि 23:00 वाजता 74 असेल। बाधित वॉर्ड: Chembur, Borivali, Andheri East · Jogeshwari East, Govandi · Mankhurd."
+ "en": "Thursday 12 November forecast for Mumbai average PM2.5 is 53 (Satisfactory), cleanest at 15:00 (44), worst at 23:00 (74) in Chembur, Borivali, Govandi · Mankhurd. Friday 13 November average is 57 (Satisfactory), cleanest at 14:00 (45), worst at 23:00 (70) in Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli.",
+ "hi": "गुरुवार 12 नवंबर: मुंबई औसत PM2.5 53 (संतोषजनक), 15:00 बजे सबसे साफ (44), 23:00 बजे सबसे खराब (74)। वार्ड: Chembur, Borivali, Govandi · Mankhurd। शुक्रवार 13 नवंबर: औसत 57 (संतोषजनक), 14:00 बजे सबसे साफ (45), 23:00 बजे सबसे खराब (70)। वार्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli।",
+ "mr": "गुरुवार 12 नोव्हेंबर: मुंबई सरासरी PM2.5 53 (समाधानकारक), 15:00 वाजता सर्वात स्वच्छ (44), 23:00 वाजता सर्वात वाईट (74). वॉर्ड: Chembur, Borivali, Govandi · Mankhurd. शुक्रवार 13 नोव्हेंबर: सरासरी 57 (समाधानकारक), 14:00 वाजता सर्वात स्वच्छ (45), 23:00 वाजता सर्वात वाईट (70). वॉर्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli."
 }
