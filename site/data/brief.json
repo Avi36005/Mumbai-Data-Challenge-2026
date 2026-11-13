@@ -1,23 +1,23 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-13T11:02Z",
+ "made": "2026-11-13T19:42Z",
  "for": [
-  "2026-11-13",
-  "2026-11-14"
+  "2026-11-14",
+  "2026-11-15"
  ],
  "facts": {
   "city": "Mumbai",
   "pollutant": "PM2.5 (µg/m³), CPCB categories",
   "days": [
    {
-    "date": "2026-11-13",
-    "label": "Friday 13 November",
-    "city_average_ugm3": 55,
-    "city_average_category": "Satisfactory",
-    "cleanest_daytime_hour": "17:00",
-    "cleanest_hour_ugm3": 38,
+    "date": "2026-11-14",
+    "label": "Saturday 14 November",
+    "city_average_ugm3": 60,
+    "city_average_category": "Moderate",
+    "cleanest_daytime_hour": "16:00",
+    "cleanest_hour_ugm3": 47,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 68,
+    "worst_hour_ugm3_if_smoke_lingers": 76,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -26,14 +26,14 @@
     "kind": "forecast"
    },
    {
-    "date": "2026-11-14",
-    "label": "Saturday 14 November",
-    "city_average_ugm3": 61,
+    "date": "2026-11-15",
+    "label": "Sunday 15 November",
+    "city_average_ugm3": 64,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "15:00",
-    "cleanest_hour_ugm3": 45,
-    "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 73,
+    "cleanest_daytime_hour": "19:00",
+    "cleanest_hour_ugm3": 46,
+    "worst_hour": "00:00",
+    "worst_hour_ugm3_if_smoke_lingers": 83,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "Mumbai forecast: Friday 13 November average is 55 Satisfactory. Cleanest at 17:00 (38) and worst at 23:00 (68). Saturday 14 November average is 61 Moderate. Cleanest at 15:00 (45), worst at 23:00 (73). Most affected: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly people and people with heart or lung conditions limit outdoor effort.",
- "hi": "मुंबई का पूर्वानुमान: शुक्रवार 13 नवंबर को औसत 55 संतोषजनक है। सबसे साफ 17:00 (38) और खराब 23:00 (68)। शनिवार 14 नवंबर को औसत 61 मध्यम है, साफ 15:00 (45) और खराब 23:00 (73)। सर्वाधिक प्रभावित: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। बच्चे, बुजुर्ग और हृदय या फेफड़ों की बीमारी वाले बाहरी प्रयास सीमित करें।",
- "mr": "मुंबईचा अंदाज: शुक्रवार 13 नोव्हेंबर रोजी सरासरी 55 समाधानकारक आहे. सर्वात स्वच्छ 17:00 (38) व वाईट 23:00 (68). शनिवार 14 नोव्हेंबर रोजी सरासरी 61 मध्यम आहे, स्वच्छ 15:00 (45) व वाईट 23:00 (73). बाधित भाग: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या व्यक्तींनी बाहेरील श्रम मर्यादित करावेत."
+ "en": "In Mumbai, air quality is forecast as Moderate on Saturday 14 November (average 60) and Sunday 15 November (average 64). Children, elderly people and people with heart or lung conditions should limit outdoor effort. Chembur, Govandi · Mankhurd and Ghatkopar · Vikhroli are the most affected wards.",
+ "hi": "मुंबई में शनिवार 14 नवंबर को हवा मध्यम (औसत 60) और रविवार 15 नवंबर को मध्यम (औसत 64) रहने की संभावना है। बच्चों, बुजुर्गों और हृदय या फेफड़ों की स्थिति वाले लोगों को बाहरी प्रयास सीमित करने चाहिए। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे अधिक प्रभावित वार्ड हैं।",
+ "mr": "मुंबईत शनिवार 14 नोव्हेंबर रोजी हवा मध्यम (सरासरी 60) आणि रविवार 15 नोव्हेंबर रोजी मध्यम (सरासरी 64) राहण्याचा अंदाज आहे. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा त्रास असलेल्या लोकांनी बाहेरील श्रम मर्यादित करावेत. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli हे सर्वाधिक प्रभावित भाग आहेत."
 }
