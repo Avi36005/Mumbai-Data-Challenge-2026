@@ -1,6 +1,6 @@
 {
- "model": "gemini-3.6-flash",
- "made": "2026-11-14T01:30Z",
+ "model": "gemini-3.8-flash",
+ "made": "2026-11-14T10:26Z",
  "for": [
   "2026-11-14",
   "2026-11-15"
@@ -12,12 +12,12 @@
    {
     "date": "2026-11-14",
     "label": "Saturday 14 November",
-    "city_average_ugm3": 60,
-    "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "16:00",
-    "cleanest_hour_ugm3": 47,
+    "city_average_ugm3": 59,
+    "city_average_category": "Satisfactory",
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 36,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 76,
+    "worst_hour_ugm3_if_smoke_lingers": 72,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -33,7 +33,7 @@
     "cleanest_daytime_hour": "19:00",
     "cleanest_hour_ugm3": 46,
     "worst_hour": "00:00",
-    "worst_hour_ugm3_if_smoke_lingers": 83,
+    "worst_hour_ugm3_if_smoke_lingers": 81,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "Saturday 14 November forecast for Mumbai is Moderate 60 (cleanest 16:00 at 47, worst 23:00 at 76). Sunday 15 November is Moderate 64 (cleanest 19:00 at 46, worst 00:00 at 83). Most affected wards: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly and people with heart or lung conditions should limit outdoor effort.",
- "hi": "शनिवार 14 नवंबर को मुंबई का अनुमान मध्यम 60 है, 16:00 बजे 47 और 23:00 बजे 76। रविवार 15 नवंबर को मध्यम 64 है, 19:00 बजे 46 और 00:00 बजे 83। प्रभावित वार्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। बच्चे, बुजुर्ग और हृदय या फेफड़ों के मरीज बाहरी प्रयास सीमित करें।",
- "mr": "शनिवार 14 नोव्हेंबर रोजी मुंबईचा अंदाज मध्यम 60 आहे, 16:00 वाजता 47 आणि 23:00 वाजता 76. रविवार 15 नोव्हेंबर रोजी मध्यम 64 आहे, 19:00 वाजता 46 आणि 00:00 वाजता 83. प्रभावित वॉर्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या लोकांनी मैदानी श्रम मर्यादित करावेत."
+ "en": "In Mumbai, Saturday 14 November air is forecast as Satisfactory at 59. Sunday 15 November will be Moderate at 64. Children, elderly people and people with heart or lung conditions limit outdoor effort when air is Moderate. Most affected wards are Chembur, Govandi · Mankhurd, and Ghatkopar · Vikhroli.",
+ "hi": "शनिवार 14 नवंबर को मुंबई की हवा 59 के साथ संतोषजनक रहने का अनुमान है। रविवार 15 नवंबर को हवा 64 पर मध्यम रहेगी। मध्यम हवा में बच्चे, बुजुर्ग और दिल या फेफड़ों की बीमारी वाले लोग बाहरी मेहनत सीमित करें। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे प्रभावित वार्ड हैं।",
+ "mr": "शनिवार 14 नोव्हेंबर रोजी मुंबईत हवा 59 सह समाधानकारक राहण्याचा अंदाज आहे. रविवार 15 नोव्हेंबर रोजी हवा 64 सह मध्यम असेल. हवा मध्यम असताना मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असणाऱ्यांनी मैदानी कष्ट मर्यादित करावेत. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli सर्वाधिक बाधित वॉर्ड आहेत."
 }

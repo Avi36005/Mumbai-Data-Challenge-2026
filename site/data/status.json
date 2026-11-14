@@ -1,7 +1,7 @@
 {
- "updated": "2026-11-14 06:57 IST",
+ "updated": "2026-11-14 15:56 IST",
  "runner": "GitHub Actions (cloud)",
- "gfs_run": "2026-11-13T12:00Z",
+ "gfs_run": "2026-11-14T00:00Z",
  "forecast_to": "2026-11-16T23:00",
  "days": 13,
  "engine_days": [
@@ -10,7 +10,7 @@
   "2026-11-15",
   "2026-11-16"
  ],
- "seconds": 21,
+ "seconds": 25,
  "tests": {
   "passed": 72,
   "failed": 0
