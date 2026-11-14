@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-13T19:42Z",
+ "made": "2026-11-14T01:30Z",
  "for": [
   "2026-11-14",
   "2026-11-15"
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "In Mumbai, air quality is forecast as Moderate on Saturday 14 November (average 60) and Sunday 15 November (average 64). Children, elderly people and people with heart or lung conditions should limit outdoor effort. Chembur, Govandi · Mankhurd and Ghatkopar · Vikhroli are the most affected wards.",
- "hi": "मुंबई में शनिवार 14 नवंबर को हवा मध्यम (औसत 60) और रविवार 15 नवंबर को मध्यम (औसत 64) रहने की संभावना है। बच्चों, बुजुर्गों और हृदय या फेफड़ों की स्थिति वाले लोगों को बाहरी प्रयास सीमित करने चाहिए। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे अधिक प्रभावित वार्ड हैं।",
- "mr": "मुंबईत शनिवार 14 नोव्हेंबर रोजी हवा मध्यम (सरासरी 60) आणि रविवार 15 नोव्हेंबर रोजी मध्यम (सरासरी 64) राहण्याचा अंदाज आहे. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा त्रास असलेल्या लोकांनी बाहेरील श्रम मर्यादित करावेत. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli हे सर्वाधिक प्रभावित भाग आहेत."
+ "en": "Saturday 14 November forecast for Mumbai is Moderate 60 (cleanest 16:00 at 47, worst 23:00 at 76). Sunday 15 November is Moderate 64 (cleanest 19:00 at 46, worst 00:00 at 83). Most affected wards: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "शनिवार 14 नवंबर को मुंबई का अनुमान मध्यम 60 है, 16:00 बजे 47 और 23:00 बजे 76। रविवार 15 नवंबर को मध्यम 64 है, 19:00 बजे 46 और 00:00 बजे 83। प्रभावित वार्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। बच्चे, बुजुर्ग और हृदय या फेफड़ों के मरीज बाहरी प्रयास सीमित करें।",
+ "mr": "शनिवार 14 नोव्हेंबर रोजी मुंबईचा अंदाज मध्यम 60 आहे, 16:00 वाजता 47 आणि 23:00 वाजता 76. रविवार 15 नोव्हेंबर रोजी मध्यम 64 आहे, 19:00 वाजता 46 आणि 00:00 वाजता 83. प्रभावित वॉर्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या लोकांनी मैदानी श्रम मर्यादित करावेत."
 }
