@@ -1,6 +1,6 @@
 {
- "model": "gemini-3.8-flash",
- "made": "2026-11-14T10:26Z",
+ "model": "gemini-3.6-flash",
+ "made": "2026-11-14T18:04Z",
  "for": [
   "2026-11-14",
   "2026-11-15"
@@ -28,12 +28,12 @@
    {
     "date": "2026-11-15",
     "label": "Sunday 15 November",
-    "city_average_ugm3": 64,
+    "city_average_ugm3": 63,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "19:00",
-    "cleanest_hour_ugm3": 46,
-    "worst_hour": "00:00",
-    "worst_hour_ugm3_if_smoke_lingers": 81,
+    "cleanest_daytime_hour": "16:00",
+    "cleanest_hour_ugm3": 48,
+    "worst_hour": "08:00",
+    "worst_hour_ugm3_if_smoke_lingers": 80,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "In Mumbai, Saturday 14 November air is forecast as Satisfactory at 59. Sunday 15 November will be Moderate at 64. Children, elderly people and people with heart or lung conditions limit outdoor effort when air is Moderate. Most affected wards are Chembur, Govandi · Mankhurd, and Ghatkopar · Vikhroli.",
- "hi": "शनिवार 14 नवंबर को मुंबई की हवा 59 के साथ संतोषजनक रहने का अनुमान है। रविवार 15 नवंबर को हवा 64 पर मध्यम रहेगी। मध्यम हवा में बच्चे, बुजुर्ग और दिल या फेफड़ों की बीमारी वाले लोग बाहरी मेहनत सीमित करें। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे प्रभावित वार्ड हैं।",
- "mr": "शनिवार 14 नोव्हेंबर रोजी मुंबईत हवा 59 सह समाधानकारक राहण्याचा अंदाज आहे. रविवार 15 नोव्हेंबर रोजी हवा 64 सह मध्यम असेल. हवा मध्यम असताना मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असणाऱ्यांनी मैदानी कष्ट मर्यादित करावेत. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli सर्वाधिक बाधित वॉर्ड आहेत."
+ "en": "Saturday 14 November Mumbai average PM2.5: 59 (Satisfactory), 17:00 cleanest (36), 23:00 worst (72). Sunday 15 November average: 63 (Moderate), 16:00 cleanest (48), 08:00 worst (80). Children, elderly, and people with heart or lung conditions should limit outdoor effort. Wards: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli.",
+ "hi": "शनिवार 14 नवंबर मुंबई PM2.5 औसत 59 (संतोषजनक), 17:00 सबसे साफ (36), 23:00 सबसे खराब (72)। रविवार 15 नवंबर औसत 63 (मध्यम), 16:00 सबसे साफ (48), 08:00 सबसे खराब (80)। बच्चों, बुजुर्गों और हृदय या फेफड़ों के मरीजों को बाहरी प्रयास सीमित करने चाहिए। प्रभावित: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli।",
+ "mr": "शनिवार 14 नोव्हेंबर मुंबई PM2.5 सरासरी 59 (समाधानकारक), 17:00 सर्वात स्वच्छ (36), 23:00 सर्वात वाईट (72). रविवार 15 नोव्हेंबर सरासरी 63 (मध्यम), 16:00 सर्वात स्वच्छ (48), 08:00 सर्वात वाईट (80). लहान मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा त्रास असलेल्या लोकांनी मैदानी प्रयत्न मर्यादित करावेत. प्रभावित: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli."
 }
