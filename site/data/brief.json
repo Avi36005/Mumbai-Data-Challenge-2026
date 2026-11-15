@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-14T22:27Z",
+ "made": "2026-11-15T06:35Z",
  "for": [
   "2026-11-15",
   "2026-11-16"
@@ -12,10 +12,10 @@
    {
     "date": "2026-11-15",
     "label": "Sunday 15 November",
-    "city_average_ugm3": 63,
+    "city_average_ugm3": 61,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "16:00",
-    "cleanest_hour_ugm3": 48,
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 38,
     "worst_hour": "08:00",
     "worst_hour_ugm3_if_smoke_lingers": 80,
     "most_affected_wards": [
@@ -28,22 +28,22 @@
    {
     "date": "2026-11-16",
     "label": "Monday 16 November",
-    "city_average_ugm3": 60,
+    "city_average_ugm3": 58,
     "city_average_category": "Satisfactory",
-    "cleanest_daytime_hour": "20:00",
-    "cleanest_hour_ugm3": 38,
-    "worst_hour": "08:00",
+    "cleanest_daytime_hour": "14:00",
+    "cleanest_hour_ugm3": 47,
+    "worst_hour": "23:00",
     "worst_hour_ugm3_if_smoke_lingers": 76,
     "most_affected_wards": [
      "Chembur",
-     "Ghatkopar · Vikhroli",
-     "Govandi · Mankhurd"
+     "Govandi · Mankhurd",
+     "Ghatkopar · Vikhroli"
     ],
     "kind": "forecast"
    }
   ]
  },
- "en": "On Sunday 15 November, Mumbai average is 63 Moderate (cleanest 16:00 at 48, worst 08:00 at 80 if smoke lingers). Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli are most affected. Children, elderly, and people with heart or lung conditions should limit outdoor effort. On Monday 16 November, average is 60 Satisfactory.",
- "hi": "रविवार 15 नवंबर को मुंबई का औसत 63 मध्यम है (साफ 16:00 बजे 48, धुआं रहने पर 08:00 बजे 80)। Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli प्रभावित हैं। बच्चों, बुजुर्गों और दिल या फेफड़ों के मरीजों को बाहरी प्रयास सीमित करने चाहिए। सोमवार 16 नवंबर को औसत 60 संतोषजनक है।",
- "mr": "रविवार 15 नोव्हेंबर रोजी मुंबईचा सरासरी 63 मध्यम आहे (स्वच्छ 16:00 वाजता 48, धूर राहिल्यास 08:00 वाजता 80). Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli सर्वाधिक प्रभावित आहेत. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे त्रास असलेल्या लोकांनी बाहेरील प्रयत्न मर्यादित करावेत. सोमवार 16 नोव्हेंबर रोजी सरासरी 60 समाधानकारक आहे."
+ "en": "Sunday 15 November Mumbai forecast average is 61 Moderate. Cleanest hour is 17:00 (38), worst is 08:00 (80 if smoke lingers). Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli are most affected. Children, elderly, and people with heart or lung conditions should limit outdoor effort. Monday 16 November forecast average is 58 Satisfactory.",
+ "hi": "रविवार 15 नवंबर को मुंबई का औसत 61 मध्यम है। सबसे साफ समय 17:00 (38) और खराब 08:00 (80 धुआं टिकने पर) है। Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli सबसे प्रभावित हैं। बच्चे, बुजुर्ग, हृदय या फेफड़ों की स्थिति वाले बाहरी प्रयास सीमित करें। सोमवार 16 नवंबर औसत 58 संतोषजनक है।",
+ "mr": "रविवार 15 नोव्हेंबर रोजी मुंबईचा अंदाज सरासरी 61 मध्यम आहे. सर्वात स्वच्छ वेळ 17:00 (38) आणि वाईट 08:00 (80 धूर राहिल्यास) आहे. Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli सर्वाधिक बाधित आहेत. लहान मुले, वृद्ध, हृदय किंवा फुफ्फुसाचे विकार असलेल्यांनी मैदानी श्रम मर्यादित करावेत. सोमवार 16 नोव्हेंबर सरासरी 58 समाधानकारक आहे."
 }
