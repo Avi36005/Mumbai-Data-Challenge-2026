@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-15T22:52Z",
+ "made": "2026-11-16T06:32Z",
  "for": [
   "2026-11-16",
   "2026-11-17"
@@ -12,12 +12,12 @@
    {
     "date": "2026-11-16",
     "label": "Monday 16 November",
-    "city_average_ugm3": 58,
+    "city_average_ugm3": 59,
     "city_average_category": "Satisfactory",
-    "cleanest_daytime_hour": "19:00",
-    "cleanest_hour_ugm3": 43,
-    "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 71,
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 39,
+    "worst_hour": "22:00",
+    "worst_hour_ugm3_if_smoke_lingers": 70,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -30,20 +30,20 @@
     "label": "Tuesday 17 November",
     "city_average_ugm3": 61,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "19:00",
-    "cleanest_hour_ugm3": 44,
+    "cleanest_daytime_hour": "18:00",
+    "cleanest_hour_ugm3": 47,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 74,
+    "worst_hour_ugm3_if_smoke_lingers": 78,
     "most_affected_wards": [
      "Chembur",
-     "Ghatkopar · Vikhroli",
-     "Govandi · Mankhurd"
+     "Govandi · Mankhurd",
+     "Ghatkopar · Vikhroli"
     ],
     "kind": "forecast"
    }
   ]
  },
- "en": "On Monday 16 November, Mumbai average PM2.5 is forecast at 58 (Satisfactory), cleanest at 19:00 (43) and worst at 23:00 (71). On Tuesday 17 November, average is 61 (Moderate), cleanest at 19:00 (44) and worst at 23:00 (74). Affected wards: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly and heart or lung patients should limit outdoor effort when Moderate.",
- "hi": "सोमवार 16 नवंबर को मुंबई का औसत PM2.5 58 (संतोषजनक) रहेगा, 19:00 बजे 43 और 23:00 बजे 71। मंगलवार 17 नवंबर को औसत 61 (मध्यम), 19:00 बजे 44 और 23:00 बजे 74। प्रभावित वार्ड Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli हैं। हवा मध्यम होने पर बच्चों, बुजुर्गों और हृदय या फेफड़ों के मरीजों को बाहरी श्रम सीमित करना चाहिए।",
- "mr": "सोमवार 16 नोव्हेंबर रोजी मुंबईची सरासरी PM2.5 58 (समाधानकारक) असेल, 19:00 वाजता 43 आणि 23:00 वाजता 71. मंगळवार 17 नोव्हेंबर रोजी सरासरी 61 (मध्यम), 19:00 वाजता 44 आणि 23:00 वाजता 74 असेल. प्रभावित वॉर्ड Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli आहेत. हवा मध्यम असताना मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे विकार असलेल्यांनी मैदानी श्रम मर्यादित करावेत."
+ "en": "On Monday 16 November, Mumbai average PM2.5 is 59 (Satisfactory), cleanest at 17:00 (39), worst at 22:00 (70). On Tuesday 17 November, average is 61 (Moderate), cleanest 18:00 (47), worst 23:00 (78). Wards: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly people and people with heart or lung conditions limit outdoor effort.",
+ "hi": "सोमवार 16 नवंबर को मुंबई का औसत PM2.5 59 (संतोषजनक) है, सबसे साफ 17:00 बजे (39) और खराब 22:00 बजे (70)। मंगलवार 17 नवंबर को औसत 61 (मध्यम) है, सबसे साफ 18:00 बजे (47) और खराब 23:00 बजे (78)। वार्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। बच्चे, बुजुर्ग और हृदय या फेफड़ों की बीमारी वाले लोग बाहरी प्रयास सीमित करें।",
+ "mr": "सोमवार 16 नोव्हेंबरला मुंबईची सरासरी PM2.5 59 (समाधानकारक) आहे, सर्वात स्वच्छ 17:00 वाजता (39) आणि वाईट 22:00 वाजता (70). मंगळवार 17 नोव्हेंबरला सरासरी 61 (मध्यम) आहे, सर्वात स्वच्छ 18:00 वाजता (47) आणि वाईट 23:00 वाजता (78). प्रभाग: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे विकार असलेल्या लोकांनी बाहेरील प्रयत्न मर्यादित करावेत."
 }
