@@ -1,23 +1,23 @@
 {
- "model": "gemini-3.8-flash",
- "made": "2026-11-17T03:54Z",
+ "model": "gemini-3.6-flash",
+ "made": "2026-11-18T01:04Z",
  "for": [
-  "2026-11-17",
-  "2026-11-18"
+  "2026-11-18",
+  "2026-11-19"
  ],
  "facts": {
   "city": "Mumbai",
   "pollutant": "PM2.5 (µg/m³), CPCB categories",
   "days": [
    {
-    "date": "2026-11-17",
-    "label": "Tuesday 17 November",
-    "city_average_ugm3": 64,
+    "date": "2026-11-18",
+    "label": "Wednesday 18 November",
+    "city_average_ugm3": 66,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "18:00",
-    "cleanest_hour_ugm3": 47,
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 52,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 80,
+    "worst_hour_ugm3_if_smoke_lingers": 85,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -26,14 +26,14 @@
     "kind": "forecast"
    },
    {
-    "date": "2026-11-18",
-    "label": "Wednesday 18 November",
+    "date": "2026-11-19",
+    "label": "Thursday 19 November",
     "city_average_ugm3": 66,
     "city_average_category": "Moderate",
     "cleanest_daytime_hour": "16:00",
     "cleanest_hour_ugm3": 51,
-    "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 84,
+    "worst_hour": "00:00",
+    "worst_hour_ugm3_if_smoke_lingers": 82,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "Mumbai air quality forecast is Moderate, averaging 64 on Tuesday 17 November and 66 on Wednesday 18 November. Chembur, Govandi · Mankhurd, and Ghatkopar · Vikhroli are most affected. Children, elderly people, and people with heart or lung conditions should limit outdoor effort.",
- "hi": "मुंबई में हवा मंगलवार 17 नवंबर को 64 और बुधवार 18 नवंबर को 66 के औसत के साथ मध्यम रहेगी। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे प्रभावित हैं। बच्चे, बुजुर्ग और दिल या फेफड़ों की बीमारी वाले लोग बाहरी मेहनत सीमित करें।",
- "mr": "मुंबई मध्ये मंगळवार 17 नोव्हेंबर रोजी सरासरी 64 आणि बुधवार 18 नोव्हेंबर रोजी 66 सह हवा मध्यम राहील. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli सर्वाधिक प्रभावित आहेत. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा विकार असणाऱ्या व्यक्तींनी बाहेरील श्रम मर्यादित करावेत."
+ "en": "On Wednesday 18 November and Thursday 19 November, Mumbai average air is Moderate at 66. Cleanest times are 17:00 (52) and 16:00 (51). Worst times are 23:00 (85) and 00:00 (82). Chembur, Govandi · Mankhurd and Ghatkopar · Vikhroli are most affected. Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "बुधवार 18 नवंबर और गुरुवार 19 नवंबर को मुंबई की हवा मध्यम (औसत 66) है। सबसे साफ समय 17:00 (52) और 16:00 (51) है। सबसे खराब समय 23:00 (85) और 00:00 (82) है। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे प्रभावित हैं। बच्चों, बुजुर्गों और हृदय या फेफड़ों की बीमारी वाले लोगों को बाहरी प्रयास सीमित करने चाहिए।",
+ "mr": "बुधवार 18 नोव्हेंबर आणि गुरुवार 19 नोव्हेंबर रोजी मुंबईतील हवा मध्यम (सरासरी 66) आहे. सर्वात स्वच्छ वेळ 17:00 (52) आणि 16:00 (51) आहे. सर्वात वाईट वेळ 23:00 (85) आणि 00:00 (82) आहे. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli सर्वाधिक प्रभावित आहेत. लहान मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा त्रास असलेल्या लोकांनी बाहेरील श्रम मर्यादित करावेत."
 }
