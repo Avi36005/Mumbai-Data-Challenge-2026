@@ -1,6 +1,6 @@
 {
- "model": "gemini-3.6-flash",
- "made": "2026-11-19T02:39Z",
+ "model": "gemini-3.7-flash",
+ "made": "2026-11-19T11:43Z",
  "for": [
   "2026-11-19",
   "2026-11-20"
@@ -14,8 +14,8 @@
     "label": "Thursday 19 November",
     "city_average_ugm3": 63,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "16:00",
-    "cleanest_hour_ugm3": 50,
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 43,
     "worst_hour": "08:00",
     "worst_hour_ugm3_if_smoke_lingers": 77,
     "most_affected_wards": [
@@ -28,7 +28,7 @@
    {
     "date": "2026-11-20",
     "label": "Friday 20 November",
-    "city_average_ugm3": 64,
+    "city_average_ugm3": 62,
     "city_average_category": "Moderate",
     "cleanest_daytime_hour": "13:00",
     "cleanest_hour_ugm3": 46,
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "Mumbai forecast for Thursday 19 November is 63 (Moderate), cleanest at 16:00 (50), worst at 08:00 (77). Friday 20 November forecast is 64 (Moderate), cleanest at 13:00 (46), worst at 23:00 (82). Wards affected: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
- "hi": "मुंबई में गुरुवार 19 नवंबर का पूर्वानुमान औसत 63 (मध्यम), 16:00 बजे 50 और 08:00 बजे 77 है। शुक्रवार 20 नवंबर का औसत 64 (मध्यम), 13:00 बजे 46 और 23:00 बजे 82 है। प्रभावित वार्ड: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। बच्चे, बुजुर्ग और हृदय या फेफड़ों के मरीज बाहरी प्रयास सीमित करें।",
- "mr": "मुंबईत गुरुवार 19 नोव्हेंबरचा अंदाज सरासरी 63 (मध्यम), 16:00 वाजता 50 आणि 08:00 वाजता 77 आहे. शुक्रवार 20 नोव्हेंबरचा सरासरी 64 (मध्यम), 13:00 वाजता 46 आणि 23:00 वाजता 82 आहे. बाधित भाग: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या लोकांनी बाहेरील श्रम मर्यादित करावेत."
+ "en": "On Thursday 19 November and Friday 20 November, Mumbai air is forecast as Moderate, averaging 63 and 62. Chembur, Govandi · Mankhurd, and Ghatkopar · Vikhroli are most affected. Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "गुरुवार 19 नवंबर और शुक्रवार 20 नवंबर को मुंबई की हवा मध्यम रहने का अनुमान है, जिसका औसत 63 और 62 है। Chembur, Govandi · Mankhurd और Ghatkopar · Vikhroli सबसे प्रभावित हैं। बच्चे, बुजुर्ग और हृदय या फेफड़ों की बीमारी वाले लोग बाहरी प्रयास सीमित करें।",
+ "mr": "गुरुवार 19 नोव्हेंबर आणि शुक्रवार 20 नोव्हेंबर रोजी मुंबईची हवा मध्यम राहण्याचा अंदाज असून सरासरी 63 आणि 62 आहे. Chembur, Govandi · Mankhurd आणि Ghatkopar · Vikhroli सर्वाधिक प्रभावित आहेत. मुले, वृद्ध तसेच हृदय किंवा फुफ्फुसाचा विकार असणाऱ्यांनी बाहेरील मेहनत मर्यादित करावी."
 }
