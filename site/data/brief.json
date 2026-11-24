@@ -1,22 +1,22 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-24T13:43Z",
+ "made": "2026-11-24T23:55Z",
  "for": [
-  "2026-11-24",
-  "2026-11-25"
+  "2026-11-25",
+  "2026-11-26"
  ],
  "facts": {
   "city": "Mumbai",
   "pollutant": "PM2.5 (µg/m³), CPCB categories",
   "days": [
    {
-    "date": "2026-11-24",
-    "label": "Tuesday 24 November",
+    "date": "2026-11-25",
+    "label": "Wednesday 25 November",
     "city_average_ugm3": 73,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "17:00",
-    "cleanest_hour_ugm3": 44,
-    "worst_hour": "08:00",
+    "cleanest_daytime_hour": "15:00",
+    "cleanest_hour_ugm3": 55,
+    "worst_hour": "23:00",
     "worst_hour_ugm3_if_smoke_lingers": 89,
     "most_affected_wards": [
      "Chembur",
@@ -26,14 +26,14 @@
     "kind": "forecast"
    },
    {
-    "date": "2026-11-25",
-    "label": "Wednesday 25 November",
-    "city_average_ugm3": 75,
+    "date": "2026-11-26",
+    "label": "Thursday 26 November",
+    "city_average_ugm3": 74,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "15:00",
-    "cleanest_hour_ugm3": 57,
+    "cleanest_daytime_hour": "14:00",
+    "cleanest_hour_ugm3": 55,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 91,
+    "worst_hour_ugm3_if_smoke_lingers": 89,
     "most_affected_wards": [
      "Chembur",
      "Ghatkopar · Vikhroli",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "Tuesday 24 November Mumbai average is 73 Moderate (17:00 cleanest 44, 08:00 worst 89). Wednesday 25 November average is 75 Moderate (15:00 cleanest 57, 23:00 worst 91). Wards: Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd. Children, elderly and people with heart or lung conditions should limit outdoor effort.",
- "hi": "मंगलवार 24 नवंबर मुंबई औसत 73 मध्यम (17:00 पर 44, 08:00 पर 89)। बुधवार 25 नवंबर औसत 75 मध्यम (15:00 पर 57, 23:00 पर 91)। प्रभावित क्षेत्र Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd हैं। बच्चों, बुजुर्गों और हृदय या फेफड़ों के मरीजों को बाहरी प्रयास सीमित करने चाहिए।",
- "mr": "मंगळवार 24 नोव्हेंबर मुंबई सरासरी 73 मध्यम (17:00 वाजता 44, 08:00 वाजता 89). बुधवार 25 नोव्हेंबर सरासरी 75 मध्यम (15:00 वाजता 57, 23:00 वाजता 91). बाधित भाग: Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd. लहान मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचा त्रास असलेल्या लोकांनी बाहेरील श्रम मर्यादित करावेत."
+ "en": "On Wednesday 25 November, Mumbai average PM2.5 forecast is 73 Moderate, cleanest at 15:00 (55) and worst at 23:00 (89). On Thursday 26 November, average is 74 Moderate, cleanest at 14:00 (55). Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd are most affected. Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "बुधवार 25 नवंबर को मुंबई में औसत PM2.5 पूर्वानुमान 73 मध्यम है, 15:00 बजे सबसे स्वच्छ (55) और 23:00 बजे सबसे खराब (89) है। गुरुवार 26 नवंबर को औसत 74 मध्यम है, 14:00 बजे सबसे स्वच्छ (55)। Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd सबसे प्रभावित हैं। बच्चों, बुजुर्गों और हृदय या फेफड़ों की बीमारी वाले लोगों को बाहरी प्रयास सीमित करने चाहिए।",
+ "mr": "बुधवार 25 नोव्हेंबर रोजी मुंबईत सरासरी PM2.5 अंदाज 73 मध्यम आहे, 15:00 वाजता सर्वात स्वच्छ (55) व 23:00 वाजता सर्वात वाईट (89). गुरुवार 26 नोव्हेंबर रोजी सरासरी 74 मध्यम आहे, 14:00 वाजता सर्वात स्वच्छ (55). Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd सर्वाधिक प्रभावित आहेत. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या लोकांनी मैदानी श्रम मर्यादित करावेत."
 }
