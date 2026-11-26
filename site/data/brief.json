@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-26T03:35Z",
+ "made": "2026-11-26T16:58Z",
  "for": [
   "2026-11-26",
   "2026-11-27"
@@ -12,12 +12,12 @@
    {
     "date": "2026-11-26",
     "label": "Thursday 26 November",
-    "city_average_ugm3": 71,
+    "city_average_ugm3": 70,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "15:00",
-    "cleanest_hour_ugm3": 55,
-    "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 86,
+    "cleanest_daytime_hour": "17:00",
+    "cleanest_hour_ugm3": 45,
+    "worst_hour": "08:00",
+    "worst_hour_ugm3_if_smoke_lingers": 84,
     "most_affected_wards": [
      "Chembur",
      "Ghatkopar · Vikhroli",
@@ -28,12 +28,12 @@
    {
     "date": "2026-11-27",
     "label": "Friday 27 November",
-    "city_average_ugm3": 68,
+    "city_average_ugm3": 67,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "14:00",
+    "cleanest_daytime_hour": "15:00",
     "cleanest_hour_ugm3": 53,
     "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 83,
+    "worst_hour_ugm3_if_smoke_lingers": 82,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -43,7 +43,7 @@
    }
   ]
  },
- "en": "On Thursday 26 November, Mumbai average PM2.5 is 71 Moderate. Cleanest hour is 15:00 at 55 and worst is 23:00 at 86. Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd are most affected. On Friday 27 November, average is 68 Moderate. Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
- "hi": "गुरुवार 26 नवंबर को मुंबई का औसत PM2.5 71 मध्यम है। 15:00 पर 55 और 23:00 पर 86 है। Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd सबसे प्रभावित हैं। शुक्रवार 27 नवंबर का औसत 68 मध्यम है। बच्चों, बुजुर्गों और हृदय या फेफड़ों की बीमारी वाले लोगों को बाहरी प्रयास सीमित करने चाहिए।",
- "mr": "गुरुवार 26 नोव्हेंबर रोजी मुंबईची सरासरी PM2.5 71 मध्यम आहे. 15:00 वाजता 55 आणि 23:00 वाजता 86 आहे. Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd सर्वाधिक प्रभावित आहेत. शुक्रवार 27 नोव्हेंबरची सरासरी 68 मध्यम आहे. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या व्यक्तींनी मैदानी श्रम मर्यादित करावेत."
+ "en": "On Thursday 26 November Mumbai average is 70 (Moderate) and Friday 27 November is 67 (Moderate). Cleanest: 17:00 (45), 15:00 (53). Worst: 08:00 (84), 23:00 (82). Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd are affected. Children, elderly, and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "गुरुवार 26 नवंबर को मुंबई औसत 70 (मध्यम) और शुक्रवार 27 नवंबर को 67 (मध्यम) है। साफ समय: 17:00 (45), 15:00 (53)। खराब: 08:00 (84), 23:00 (82)। Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd प्रभावित हैं। बच्चों, बुजुर्गों और हृदय या फेफड़ों के मरीजों को बाहरी प्रयास सीमित करने चाहिए।",
+ "mr": "गुरुवार 26 नोव्हेंबर रोजी मुंबई सरासरी 70 (मध्यम) आणि शुक्रवार 27 नोव्हेंबर रोजी 67 (मध्यम) असेल. स्वच्छ वेळ: 17:00 (45), 15:00 (53). वाईट: 08:00 (84), 23:00 (82). Chembur, Ghatkopar · Vikhroli, Govandi · Mankhurd प्रभावित आहेत. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे विकार असलेल्या लोकांनी मैदानी प्रयत्न मर्यादित करावेत."
 }
