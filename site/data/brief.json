@@ -1,23 +1,23 @@
 {
  "model": "gemini-3.6-flash",
- "made": "2026-11-27T12:23Z",
+ "made": "2026-11-27T23:31Z",
  "for": [
-  "2026-11-27",
-  "2026-11-28"
+  "2026-11-28",
+  "2026-11-29"
  ],
  "facts": {
   "city": "Mumbai",
   "pollutant": "PM2.5 (µg/m³), CPCB categories",
   "days": [
    {
-    "date": "2026-11-27",
-    "label": "Friday 27 November",
-    "city_average_ugm3": 66,
+    "date": "2026-11-28",
+    "label": "Saturday 28 November",
+    "city_average_ugm3": 63,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "17:00",
-    "cleanest_hour_ugm3": 45,
-    "worst_hour": "08:00",
-    "worst_hour_ugm3_if_smoke_lingers": 79,
+    "cleanest_daytime_hour": "15:00",
+    "cleanest_hour_ugm3": 50,
+    "worst_hour": "23:00",
+    "worst_hour_ugm3_if_smoke_lingers": 82,
     "most_affected_wards": [
      "Chembur",
      "Govandi · Mankhurd",
@@ -26,24 +26,24 @@
     "kind": "forecast"
    },
    {
-    "date": "2026-11-28",
-    "label": "Saturday 28 November",
-    "city_average_ugm3": 66,
+    "date": "2026-11-29",
+    "label": "Sunday 29 November",
+    "city_average_ugm3": 61,
     "city_average_category": "Moderate",
-    "cleanest_daytime_hour": "12:00",
-    "cleanest_hour_ugm3": 52,
-    "worst_hour": "23:00",
-    "worst_hour_ugm3_if_smoke_lingers": 80,
+    "cleanest_daytime_hour": "14:00",
+    "cleanest_hour_ugm3": 47,
+    "worst_hour": "00:00",
+    "worst_hour_ugm3_if_smoke_lingers": 74,
     "most_affected_wards": [
      "Chembur",
-     "Govandi · Mankhurd",
-     "Ghatkopar · Vikhroli"
+     "Dongri · Masjid",
+     "Bandra East · Santacruz East"
     ],
     "kind": "forecast"
    }
   ]
  },
- "en": "Friday 27 November forecast for Mumbai shows Moderate air quality (66 µg/m³). Cleanest hour is 17:00 (45 µg/m³) and worst is 08:00 (79 µg/m³). Saturday 28 November stays Moderate at 66 µg/m³. Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli are most affected. Children, elderly, and people with heart or lung conditions should limit outdoor effort.",
- "hi": "शुक्रवार 27 नवंबर को मुंबई में हवा मध्यम (66 µg/m³) रहने का अनुमान है। सबसे साफ समय 17:00 (45 µg/m³) और खराब 08:00 (79 µg/m³) है। शनिवार 28 नवंबर को औसत 66 µg/m³ (मध्यम) रहेगा। Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli सबसे प्रभावित हैं। बच्चे, बुजुर्ग और हृदय या फेफड़ों के मरीज बाहरी प्रयास सीमित करें।",
- "mr": "शुक्रवार 27 नोव्हेंबर रोजी मुंबईत हवा मध्यम (66 µg/m³) राहण्याचा अंदाज आहे. सर्वात स्वच्छ वेळ 17:00 (45 µg/m³) व वाईट 08:00 (79 µg/m³) असेल. शनिवार 28 नोव्हेंबर रोजी सरासरी 66 µg/m³ (मध्यम) राहील. Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli सर्वाधिक प्रभावित आहेत. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्यांनी मैदानी श्रम मर्यादित ठेवावेत."
+ "en": "On Saturday 28 November, Mumbai average air quality is forecast as 63 (Moderate), with cleanest hour at 15:00 and worst at 23:00. Most affected: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. On Sunday 29 November, average is 61 (Moderate). Children, elderly people and people with heart or lung conditions should limit outdoor effort.",
+ "hi": "शनिवार 28 नवंबर को मुंबई का औसत 63 (मध्यम) रहेगा, सबसे साफ समय 15:00 और खराब 23:00। प्रभावित क्षेत्र: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli। रविवार 29 नवंबर को औसत 61 (मध्यम) रहेगा। बच्चों, बुजुर्गों और हृदय या फेफड़ों के रोगियों को बाहरी प्रयास सीमित करने चाहिए।",
+ "mr": "शनिवार 28 नोव्हेंबर रोजी मुंबईची सरासरी 63 (मध्यम) असेल, 15:00 वाजता सर्वात स्वच्छ आणि 23:00 वाजता वाईट. प्रभावित भाग: Chembur, Govandi · Mankhurd, Ghatkopar · Vikhroli. रविवार 29 नोव्हेंबर रोजी सरासरी 61 (मध्यम) असेल. मुले, वृद्ध आणि हृदय किंवा फुफ्फुसाचे आजार असलेल्या लोकांनी मैदानी प्रयत्न मर्यादित करावेत."
 }
